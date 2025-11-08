@@ -1,0 +1,92 @@
+.background {
+    -fx-background-image: url("../images/menuBackground.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+}
+
+.background2 {
+    -fx-background-image: url("../images/selectionBackground.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+}
+
+.backgroundGame {
+    -fx-background-image: url("../images/Table.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+}
+
+.backgroundHelp {
+    -fx-background-image: url("../images/helpBackground.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+}
+
+.my-button1 {
+    -fx-background-image: url("../images/play.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.my-button2 {
+    -fx-background-image: url("../images/exit.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.my-button3 {
+    -fx-background-image: url("../images/help.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.my-button4 {
+    -fx-background-image: url("../images/1Player.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.my-button5 {
+    -fx-background-image: url("../images/2Players.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.my-button6 {
+    -fx-background-image: url("../images/3Players.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.my-button7 {
+    -fx-background-image: url("../images/back.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.button-back {
+    -fx-background-image: url("../images/back2.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.button-help {
+    -fx-background-image: url("../images/help2.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+
+.button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0);
+    -fx-effect: dropshadow(gaussian, rgb(255, 166, 0),20,0.3,0,0);
+}
