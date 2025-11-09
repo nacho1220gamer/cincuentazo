@@ -13,8 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="backgroundHelp" stylesheets="@../css/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="backgroundHelp" stylesheets="@../css/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cincuentazo.controller.CincuentazoHelpController">
    <children>
       <ImageView fitHeight="51.0" fitWidth="258.0" layoutX="171.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -159,6 +158,6 @@
             </VBox>
          </children>
       </HBox>
-      <Button layoutX="3.0" layoutY="3.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="54.0" styleClass="button-back" />
+      <Button layoutX="3.0" layoutY="3.0" mnemonicParsing="false" onAction="#handleBack" prefHeight="57.0" prefWidth="54.0" styleClass="button-back" />
    </children>
 </Pane>

@@ -6,44 +6,65 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@../css/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Pane prefHeight="223.0" prefWidth="600.0" />
-      <Pane prefHeight="344.0" prefWidth="600.0">
-         <children>
-            <Button layoutX="241.0" layoutY="8.0" mnemonicParsing="false" prefHeight="98.0" prefWidth="107.0" styleClass="my-button1">
-               <effect>
-                  <DropShadow height="36.85" offsetY="-10.0" radius="32.665" width="95.81">
-                     <color>
-                        <Color opacity="0.7265774607658386" />
-                     </color></DropShadow>
-               </effect>
-            </Button>
-            <Button layoutX="126.0" layoutY="8.0" mnemonicParsing="false" prefHeight="98.0" prefWidth="107.0" styleClass="my-button2">
-               <effect>
-                  <DropShadow height="37.21" offsetY="-10.0" radius="19.21" width="41.63">
-                     <color>
-                        <Color opacity="0.6539196968078613" />
-                     </color>
-                  </DropShadow>
-               </effect></Button>
-            <Button layoutX="360.0" layoutY="8.0" mnemonicParsing="false" prefHeight="98.0" prefWidth="107.0" styleClass="my-button3">
-               <effect>
-                  <DropShadow height="69.28" offsetY="-10.0" radius="40.7725" width="95.81">
-                     <color>
-                        <Color opacity="0.7877628803253174" />
-                     </color>
-                  </DropShadow>
-               </effect></Button>
-            <Pane layoutX="130.0" prefHeight="210.0" prefWidth="335.0" styleClass="background2" visible="false">
-               <children>
-                  <Button layoutX="14.0" layoutY="63.0" mnemonicParsing="false" prefHeight="89.0" prefWidth="91.0" styleClass="my-button4" />
-                  <Button layoutX="117.0" layoutY="62.0" mnemonicParsing="false" prefHeight="89.0" prefWidth="91.0" styleClass="my-button5" />
-                  <Button layoutX="218.0" layoutY="63.0" mnemonicParsing="false" prefHeight="89.0" prefWidth="91.0" styleClass="my-button6" />
-                  <Button layoutX="105.0" layoutY="158.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="113.0" styleClass="my-button7" />
-               </children>
-            </Pane>
-         </children>
-      </Pane>
-   </children>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@../css/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cincuentazo.controller.CincuentazoWelcomeController">
+
+    <children>
+        <Pane prefHeight="223.0" prefWidth="600.0" />
+
+        <Pane prefHeight="344.0" prefWidth="600.0">
+            <children>
+
+                <!-- Botón SALIR -->
+                <Button layoutX="126.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleExit" prefHeight="98.0" prefWidth="107.0" styleClass="my-button2">
+                    <effect>
+                        <DropShadow height="37.21" offsetY="-10.0" radius="19.21" width="41.63">
+                            <color>
+                                <Color opacity="0.65" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </Button>
+
+                <!-- Botón JUGAR -->
+                <Button layoutX="241.0" layoutY="8.0" mnemonicParsing="false" onAction="#handlePlay" prefHeight="98.0" prefWidth="107.0" styleClass="my-button1">
+                    <effect>
+                        <DropShadow height="36.85" offsetY="-10.0" radius="32.665" width="95.81">
+                            <color>
+                                <Color opacity="0.73" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </Button>
+
+                <!-- Botón AYUDA -->
+                <Button layoutX="360.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleHelp" prefHeight="98.0" prefWidth="107.0" styleClass="my-button3">
+                    <effect>
+                        <DropShadow height="69.28" offsetY="-10.0" radius="40.7725" width="95.81">
+                            <color>
+                                <Color opacity="0.79" />
+                            </color>
+                        </DropShadow>
+                    </effect>
+                </Button>
+
+                <!-- Panel de selección de jugadores -->
+                <Pane fx:id="seleccionnumerojugadores" layoutX="130.0" prefHeight="210.0" prefWidth="335.0" styleClass="background2" visible="false">
+                    <children>
+                        <!-- 1 Jugador -->
+                        <Button layoutX="14.0" layoutY="63.0" mnemonicParsing="false" onAction="#handleOnePlayer" prefHeight="89.0" prefWidth="91.0" styleClass="my-button4" />
+
+                        <!-- 2 Jugadores -->
+                        <Button layoutX="117.0" layoutY="62.0" mnemonicParsing="false" onAction="#handleTwoPlayers" prefHeight="89.0" prefWidth="91.0" styleClass="my-button5" />
+
+                        <!-- 3 Jugadores -->
+                        <Button layoutX="218.0" layoutY="63.0" mnemonicParsing="false" onAction="#handleThreePlayers" prefHeight="89.0" prefWidth="91.0" styleClass="my-button6" />
+
+                        <!-- Botón Volver -->
+                        <Button layoutX="105.0" layoutY="158.0" mnemonicParsing="false" onAction="#handleBack" prefHeight="40.0" prefWidth="113.0" styleClass="my-button7" />
+                    </children>
+                </Pane>
+
+            </children>
+        </Pane>
+    </children>
 </VBox>
