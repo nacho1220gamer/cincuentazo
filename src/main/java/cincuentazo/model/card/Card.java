@@ -1,4 +1,4 @@
-package com.example.cincuentazodemo1.model.card;
+package cincuentazo.model.card;
 
 /**
  * Represents a playing card in the "Cincuentazo" game.

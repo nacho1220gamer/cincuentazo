@@ -1,12 +1,12 @@
-package com.example.cincuentazodemo1.model.game;
+package cincuentazo.model.game;
 
 
-import com.example.cincuentazodemo1.model.exceptions.EmptyDeckException;
-import com.example.cincuentazodemo1.model.exceptions.InvalidMoveException;
-import com.example.cincuentazodemo1.model.card.Card;
-import com.example.cincuentazodemo1.model.deck.Deck;
-import com.example.cincuentazodemo1.model.deck.IDeck;
-import com.example.cincuentazodemo1.model.player.Player;
+import cincuentazo.model.exceptions.EmptyDeckException;
+import cincuentazo.model.exceptions.InvalidMoveException;
+import cincuentazo.model.card.Card;
+import cincuentazo.model.deck.Deck;
+import cincuentazo.model.deck.IDeck;
+import cincuentazo.model.player.Player;
 
 import java.util.*;
 
@@ -17,6 +17,12 @@ import java.util.*;
 public class Game {
 
     private final IDeck deck;
+    public IDeck getDeck() {
+        return deck;
+    }
+    public void stop(){
+        gameOver=true;
+    }
     private final List<Player> players;
     private final Queue<Player> turnQueue;
     private final Stack<Card> tableCards;

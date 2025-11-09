@@ -1,7 +1,7 @@
-package com.example.cincuentazodemo1.model.deck;
+package cincuentazo.model.deck;
 
-import com.example.cincuentazodemo1.model.exceptions.EmptyDeckException;
-import com.example.cincuentazodemo1.model.card.Card;
+import cincuentazo.model.exceptions.EmptyDeckException;
+import cincuentazo.model.card.Card;
 
 import java.util.Collections;
 import java.util.Stack;

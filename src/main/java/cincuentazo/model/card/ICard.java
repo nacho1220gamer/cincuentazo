@@ -1,4 +1,4 @@
-package com.example.cincuentazodemo1.model.card;
+package cincuentazo.model.card;
 
 /**
  * Represents the basic behavior of any playing card in the game "Cincuentazo".

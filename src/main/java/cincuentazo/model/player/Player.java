@@ -1,9 +1,9 @@
-package com.example.cincuentazodemo1.model.player;
+package cincuentazo.model.player;
 
-import com.example.cincuentazodemo1.model.exceptions.EmptyDeckException;
-import com.example.cincuentazodemo1.model.exceptions.InvalidMoveException;
-import com.example.cincuentazodemo1.model.card.Card;
-import com.example.cincuentazodemo1.model.deck.IDeck;
+import cincuentazo.model.exceptions.EmptyDeckException;
+import cincuentazo.model.exceptions.InvalidMoveException;
+import cincuentazo.model.card.Card;
+import cincuentazo.model.deck.IDeck;
 
 import java.util.ArrayList;
 import java.util.List;

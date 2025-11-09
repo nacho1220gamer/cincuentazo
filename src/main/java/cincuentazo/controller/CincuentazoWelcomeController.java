@@ -1,144 +1,125 @@
 package cincuentazo.controller;
 
-import cincuentazo.view.CincuentazoGameStage;
-import cincuentazo.view.CincuentazoHelpStage;
-import cincuentazo.view.CincuentazoWelcomeStage;
-import javafx.event.ActionEvent;
+import cincuentazo.view.GameStage;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 /**
- * Controller class for the Cincuentazo welcome screen.
- * Handles user interaction for selecting number of players,
- * starting the game, and accessing the help view.
+ * Controller for the welcome/menu screen.
+ * Handles player selection and navigation to game or help screens.
  */
 public class CincuentazoWelcomeController {
 
-    /**
-     * Pane that contains the player selection options.
-     * This Pane is hidden by default and becomes visible when "Play" is pressed.
-     */
     @FXML
     private Pane seleccionnumerojugadores;
 
+    private Stage stage;
+
     /**
-     * Initializes the controller class.
-     * Hides the player selection panel by default.
+     * Sets the stage for this controller.
+     * @param stage the main application stage
      */
-    @FXML
-    public void initialize() {
-        if (seleccionnumerojugadores != null) {
-            seleccionnumerojugadores.setVisible(false);
-        }
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     /**
-     * Handles the action of pressing the "Play" button.
-     * Shows the player selection pane.
+     * Handles the "Play" button click.
+     * Shows the player selection panel.
      */
     @FXML
     private void handlePlay() {
-        if (seleccionnumerojugadores != null) {
-            seleccionnumerojugadores.setVisible(true);
-        }
+        seleccionnumerojugadores.setVisible(true);
     }
 
     /**
-     * Handles the action of pressing the "Back" button.
-     * Hides the player selection pane and returns to the main menu.
+     * Handles the "Help" button click.
+     * Opens the help screen.
      */
     @FXML
-    private void handleBack() {
-        if (seleccionnumerojugadores != null) {
-            seleccionnumerojugadores.setVisible(false);
-        }
-    }
-
-    /**
-     * Handles the action of pressing the "Exit" button.
-     * Closes the welcome stage and exits the application.
-     *
-     * @param event the ActionEvent triggered by clicking the exit button.
-     */
-    @FXML
-    void handleExit(ActionEvent event) {
-        CincuentazoWelcomeStage.deleteInstance();
-        System.exit(0);
-    }
-
-    /**
-     * Handles the action of pressing the "Help" button.
-     * Opens the help screen with game rules.
-     *
-     * @param event the ActionEvent triggered by clicking the help button.
-     */
-    @FXML
-    void handleHelp(ActionEvent event) {
+    private void handleHelp() {
         try {
-            CincuentazoHelpStage.getInstance();
-            CincuentazoWelcomeStage.deleteInstance();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cincuentazo/cincuentazo-help-view.fxml"));
+            Parent root = loader.load();
+
+            CincuentazoHelpController helpController = loader.getController();
+            helpController.setStage(stage);
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Error", "Failed to open help screen.");
         }
     }
 
     /**
-     * Handles the action of selecting one player.
+     * Handles the "Exit" button click.
+     * Closes the application.
+     */
+    @FXML
+    private void handleExit() {
+        stage.close();
+    }
+
+    /**
+     * Handles selection of 1 CPU player.
      */
     @FXML
     private void handleOnePlayer() {
-        startGameWithPlayers(1);
+        startGame(1);
     }
 
     /**
-     * Handles the action of selecting two players.
+     * Handles selection of 2 CPU players.
      */
     @FXML
     private void handleTwoPlayers() {
-        startGameWithPlayers(2);
+        startGame(2);
     }
 
     /**
-     * Handles the action of selecting three players.
+     * Handles selection of 3 CPU players.
      */
     @FXML
     private void handleThreePlayers() {
-        startGameWithPlayers(3);
+        startGame(3);
     }
 
     /**
-     * Starts the game with the specified number of players.
-     *
-     * @param numPlayers the number of players selected.
+     * Handles the "Back" button from player selection.
+     * Hides the player selection panel.
      */
-    private void startGameWithPlayers(int numPlayers) {
+    @FXML
+    private void handleBack() {
+        seleccionnumerojugadores.setVisible(false);
+    }
+
+    /**
+     * Starts the game with the specified number of CPU players.
+     * @param numCPUs number of CPU players (1-3)
+     */
+    private void startGame(int numCPUs) {
         try {
-            System.out.println("Starting game with " + numPlayers + " players...");
-            CincuentazoGameStage gameStage = CincuentazoGameStage.getInstance();
-            gameStage.getController().initializeGame(numPlayers);
-            CincuentazoWelcomeStage.deleteInstance();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cincuentazo/cincuentazo-game-view.fxml"));
+            Parent root = loader.load();
+
+            CincuentazoGameController gameController = loader.getController();
+            gameController.setStage(stage);
+            gameController.initializeGame(numCPUs);
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Cincuentazo - Playing against " + numCPUs + " CPU(s)");
+            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Error", "Failed to start the game.");
         }
-    }
-
-    /**
-     * Displays an alert dialog with the specified title and message.
-     *
-     * @param title   the title of the alert dialog.
-     * @param message the message to display in the alert.
-     */
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

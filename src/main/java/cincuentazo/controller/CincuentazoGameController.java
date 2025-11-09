@@ -1,404 +1,559 @@
 package cincuentazo.controller;
 
-import cincuentazo.view.CincuentazoFinalStage;
-import cincuentazo.view.CincuentazoGameStage;
-import cincuentazo.view.CincuentazoHelpStage;
-import cincuentazo.view.CincuentazoWelcomeStage;
+import cincuentazo.model.card.Card;
+import cincuentazo.model.exceptions.EmptyDeckException;
+import cincuentazo.model.exceptions.InvalidMoveException;
+import cincuentazo.model.game.Game;
+import cincuentazo.model.player.Player;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Controller class for the main Cincuentazo game view.
- * Manages the game screen, player interactions, machine player turns,
- * and game flow including card playing and player elimination.
+ * Controller for the main game view in Cincuentazo.
+ * Handles user interactions, updates UI, and manages game flow with threading.
  */
 public class CincuentazoGameController {
 
-    /**
-     * HBox containing the human player's cards.
-     */
-    @FXML
-    private HBox humanPlayerCardsBox;
+    // Center area (table)
+    @FXML private VBox centerVBox;
+    @FXML private Label sumLabel;
+    @FXML private HBox tableCardContainer;
+    @FXML private ImageView tableCardImage;
+
+    // Player areas
+    @FXML private BorderPane borderPane;
+    @FXML private VBox leftVBox;    // CPU-1 (left)
+    @FXML private VBox topVBox;     // CPU-2 (top)
+    @FXML private VBox rightVBox;   // CPU-3 (right)
+    @FXML private VBox bottomVBox;  // Human (bottom)
+
+    // Player card containers
+    private HBox humanCardsBox;
+    private HBox cpu1CardsBox;
+    private HBox cpu2CardsBox;
+    private HBox cpu3CardsBox;
+
+    // Player avatars
+    private ImageView cpu1Avatar;
+    private ImageView cpu2Avatar;
+    private ImageView cpu3Avatar;
+
+    private Stage stage;
+    private Game game;
+    private Player humanPlayer;
+    private List<Player> cpuPlayers;
+    private int numCPUs;
+
+    private AtomicBoolean isHumanTurn = new AtomicBoolean(false);
+    private AtomicBoolean waitingForHuman = new AtomicBoolean(false);
+    private Card selectedCard = null;
 
     /**
-     * HBox containing machine player 1's cards (face down).
+     * Sets the stage for this controller.
+     * @param stage the main application stage
      */
-    @FXML
-    private HBox machinePlayer1CardsBox;
-
-    /**
-     * HBox containing machine player 2's cards (face down).
-     */
-    @FXML
-    private HBox machinePlayer2CardsBox;
-
-    /**
-     * HBox containing machine player 3's cards (face down).
-     */
-    @FXML
-    private HBox machinePlayer3CardsBox;
-
-    /**
-     * ImageView displaying the current card on the table.
-     */
-    @FXML
-    private ImageView tableCardImageView;
-
-    /**
-     * Label displaying the current sum on the table.
-     */
-    @FXML
-    private Label tableSumLabel;
-
-    /**
-     * Label indicating whose turn it is.
-     */
-    @FXML
-    private Label currentTurnLabel;
-
-    /**
-     * Interface to the game model (injected or created).
-     * This will interact with Card, Deck, Player classes from the Model.
-     */
-    private IGame game; // Assume this interface is provided by the model team
-
-    /**
-     * ExecutorService for managing machine player threads.
-     */
-    private ExecutorService executorService;
-
-    /**
-     * Number of machine players in the current game.
-     */
-    private int numberOfMachinePlayers;
-
-    /**
-     * Initializes the game controller.
-     * Sets up the executor service for concurrent machine player actions.
-     */
-    @FXML
-    public void initialize() {
-        executorService = Executors.newSingleThreadExecutor();
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     /**
-     * Initializes a new game with the specified number of machine players.
-     * Sets up the initial game state, deals cards, and updates the UI.
-     *
-     * @param numberOfMachinePlayers the number of machine players (1, 2, or 3).
+     * Initializes the game with the specified number of CPU players.
+     * @param numCPUs number of CPU players (1-3)
      */
-    public void initializeGame(int numberOfMachinePlayers) {
-        this.numberOfMachinePlayers = numberOfMachinePlayers;
+    public void initializeGame(int numCPUs) {
+        this.numCPUs = numCPUs;
+        this.cpuPlayers = new ArrayList<>();
 
-        // Hide unused machine player boxes
-        machinePlayer2CardsBox.setVisible(numberOfMachinePlayers >= 2);
-        machinePlayer3CardsBox.setVisible(numberOfMachinePlayers >= 3);
-
-        // Initialize game model (assuming IGame is provided)
-        // game = new GameAdapter(numberOfMachinePlayers);
-        // game.startGame();
-
-        // Deal initial cards
-        updateHumanPlayerCards();
-        updateMachinePlayerCards();
-        updateTableCard();
-        updateTableSum();
-        updateCurrentTurn();
-    }
-
-    /**
-     * Handles the event when a human player clicks on one of their cards.
-     * Validates if the card can be played according to game rules.
-     *
-     * @param cardIndex the index of the card in the player's hand.
-     */
-    @FXML
-    private void handleHumanCardClick(int cardIndex) {
         try {
-            // Attempt to play the card through the model
-            // boolean success = game.playCard(cardIndex);
+            // Initialize game model (but don't start automatic thread yet)
+            game = createGameWithoutAutoStart(numCPUs);
 
-            // if (success) {
-            // Update UI
-            updateTableCard();
-            updateTableSum();
+            // Get players
+            for (Player p : game.getPlayers()) {
+                if (!p.isMachine()) {
+                    humanPlayer = p;
+                } else {
+                    cpuPlayers.add(p);
+                }
+            }
 
-            // Draw a new card
-            // game.drawCard();
-            updateHumanPlayerCards();
+            // Setup UI
+            setupPlayerAreas();
+            updateUI();
 
-            // Check if game is over
-            if (checkGameOver()) {
+            // Start custom game loop
+            startCustomGameLoop();
+
+        } catch (EmptyDeckException e) {
+            showError("Failed to initialize game: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Creates a game instance without starting the automatic thread.
+     * We need manual control for GUI synchronization.
+     */
+    private Game createGameWithoutAutoStart(int numMachines) throws EmptyDeckException {
+        // We'll need to modify Game class or create a custom initialization
+        // For now, we create the game normally but we'll control turns manually
+        return new Game(numMachines);
+    }
+
+    public void stopGame() {
+        // Si quieres simplemente detener el hilo del juego
+        if (game != null) {
+            // Puedes agregar un metodo en Game para terminar el bucle
+            game.stop(); // o algo similar
+        }
+
+        // También puedes usar una bandera local para detener la espera de turnos
+        waitingForHuman.set(false);
+        isHumanTurn.set(false);
+    }
+    /**
+     * Sets up the player areas in the UI based on number of CPUs.
+     */
+    private void setupPlayerAreas() {
+        // Get HBox containers from FXML
+        humanCardsBox = (HBox) bottomVBox.getChildren().get(0);
+
+        if (numCPUs >= 1) {
+            cpu1CardsBox = (HBox) leftVBox.getChildren().get(1);
+            cpu1Avatar = (ImageView) leftVBox.getChildren().get(0);
+        } else {
+            leftVBox.setVisible(false);
+        }
+
+        if (numCPUs >= 2) {
+            cpu2CardsBox = (HBox) topVBox.getChildren().get(1);
+            cpu2Avatar = (ImageView) topVBox.getChildren().get(0);
+        } else {
+            topVBox.setVisible(false);
+        }
+
+        if (numCPUs >= 3) {
+            cpu3CardsBox = (HBox) rightVBox.getChildren().get(1);
+            cpu3Avatar = (ImageView) rightVBox.getChildren().get(0);
+        } else {
+            rightVBox.setVisible(false);
+        }
+    }
+
+    /**
+     * Starts the custom game loop that handles turns with proper GUI synchronization.
+     */
+    private void startCustomGameLoop() {
+        Thread gameThread = new Thread(() -> {
+            while (!game.isGameOver()) {
+                try {
+                    Player currentPlayer = getCurrentPlayer();
+
+                    if (currentPlayer == null || currentPlayer.isEliminated()) {
+                        Thread.sleep(500);
+                        continue;
+                    }
+
+                    if (currentPlayer.isMachine()) {
+                        handleCPUTurn(currentPlayer);
+                    } else {
+                        handleHumanTurn(currentPlayer);
+                    }
+
+                    Platform.runLater(this::updateUI);
+
+                    if (game.isGameOver()) {
+                        Platform.runLater(this::showWinner);
+                        break;
+                    }
+
+                    Thread.sleep(1000); // Delay between turns
+
+                } catch (InterruptedException e) {
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        gameThread.setDaemon(true);
+        gameThread.start();
+    }
+
+    /**
+     * Gets the current player from the game's turn queue.
+     */
+    private Player getCurrentPlayer() {
+        // This requires accessing the game's turn queue
+        // We'll need to add a getter in Game class
+        // For now, we'll rotate through players manually
+        List<Player> activePlayers = new ArrayList<>();
+        for (Player p : game.getPlayers()) {
+            if (!p.isEliminated()) {
+                activePlayers.add(p);
+            }
+        }
+
+        if (activePlayers.isEmpty()) {
+            return null;
+        }
+
+        // Simple round-robin (you may need to improve this)
+        return activePlayers.get(0);
+    }
+
+    /**
+     * Handles a CPU player's turn with delay.
+     */
+    private void handleCPUTurn(Player cpu) {
+        try {
+            // Visual feedback: highlight CPU
+            Platform.runLater(() -> highlightCurrentPlayer(cpu));
+
+            // CPU thinks for 2-4 seconds
+            Thread.sleep(2000 + (int)(Math.random() * 2000));
+
+            // Play card
+            Card played = cpu.playCard(game.getTableSum());
+            int effect = played.calculateEffect(game.getTableSum());
+
+            Platform.runLater(() -> {
+                // Update table (this will need game model updates)
+                updateTableCard(played);
+                updateSum(game.getTableSum() + effect);
+            });
+
+            Thread.sleep(1000);
+
+            // Draw new card
+            cpu.drawCard(game.getDeck());
+
+        } catch (InvalidMoveException e) {
+            Platform.runLater(() -> {
+                showElimination(cpu);
+                eliminatePlayer(cpu);
+            });
+        } catch (EmptyDeckException e) {
+            Platform.runLater(() -> showError("Deck is empty: " + e.getMessage()));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Handles the human player's turn.
+     * Waits for user interaction with cards.
+     */
+    private void handleHumanTurn(Player human) {
+        Platform.runLater(() -> {
+            highlightCurrentPlayer(human);
+            isHumanTurn.set(true);
+            waitingForHuman.set(true);
+            enableHumanCards(true);
+        });
+
+        // Wait for human to play
+        while (waitingForHuman.get() && !game.isGameOver()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+
+        isHumanTurn.set(false);
+    }
+
+    /**
+     * Handles when human clicks a card.
+     */
+    @FXML
+    private void handleCardClick(javafx.event.ActionEvent event) {
+        if (!isHumanTurn.get()) {
+            return;
+        }
+
+        ImageView clickedCard = (ImageView) event.getSource();
+        int cardIndex = humanCardsBox.getChildren().indexOf(clickedCard);
+
+        if (cardIndex < 0 || cardIndex >= humanPlayer.getHand().size()) {
+            return;
+        }
+
+        Card card = humanPlayer.getHand().get(cardIndex);
+
+        try {
+            // Validate move
+            int effect = card.calculateEffect(game.getTableSum());
+            int newSum = game.getTableSum() + effect;
+
+            if (newSum > 50) {
+                showError("This card would exceed 50! Choose another or you'll be eliminated.");
                 return;
             }
 
-            // Start machine players' turns
-            executeMachinePlayersTurns();
-            // } else {
-            //     showAlert("Jugada Inválida", "Esta carta excede el límite de 50.");
-            // }
+            // Play the card
+            humanPlayer.getHand().remove(cardIndex);
+            updateTableCard(card);
+            updateSum(newSum);
 
+            // Draw new card
+            humanPlayer.drawCard(game.getDeck());
+
+            enableHumanCards(false);
+            waitingForHuman.set(false);
+
+        } catch (EmptyDeckException e) {
+            showError("Cannot draw card: " + e.getMessage());
         } catch (Exception e) {
-            // Handle custom exceptions from model
-            handleGameException(e);
+            showError("Error playing card: " + e.getMessage());
         }
     }
 
     /**
-     * Executes the turns for all active machine players using threads.
-     * Each machine player has a delay of 2-4 seconds before playing a card,
-     * and 1-2 seconds before drawing a new card.
+     * Updates the UI with current game state.
      */
-    private void executeMachinePlayersTurns() {
-        executorService.submit(() -> {
-            // for (int i = 0; i < numberOfMachinePlayers; i++) {
-            //     if (!game.isPlayerActive(i + 1)) continue;
+    private void updateUI() {
+        // Update human player cards
+        updatePlayerCards(humanPlayer, humanCardsBox, false);
 
-            try {
-                // Delay before playing (2-4 seconds)
-                Thread.sleep(2000 + (long)(Math.random() * 2000));
+        // Update CPU cards (face down)
+        if (numCPUs >= 1 && cpuPlayers.size() > 0) {
+            updatePlayerCards(cpuPlayers.get(0), cpu1CardsBox, true);
+        }
+        if (numCPUs >= 2 && cpuPlayers.size() > 1) {
+            updatePlayerCards(cpuPlayers.get(1), cpu2CardsBox, true);
+        }
+        if (numCPUs >= 3 && cpuPlayers.size() > 2) {
+            updatePlayerCards(cpuPlayers.get(2), cpu3CardsBox, true);
+        }
 
-                Platform.runLater(() -> {
-                    updateCurrentTurn();
-                    // game.playMachinePlayerCard(i + 1);
-                    updateTableCard();
-                    updateTableSum();
-                    updateMachinePlayerCards();
-                });
+        // Update table
+        if (game.getTopCard() != null) {
+            updateTableCard(game.getTopCard());
+        }
 
-                // Delay before drawing (1-2 seconds)
-                Thread.sleep(1000 + (long)(Math.random() * 1000));
+        // Update sum
+        updateSum(game.getTableSum());
+    }
 
-                Platform.runLater(() -> {
-                    // game.drawCardForMachinePlayer(i + 1);
-                    updateMachinePlayerCards();
-                });
+    /**
+     * Updates a player's card display.
+     */
+    private void updatePlayerCards(Player player, HBox container, boolean faceDown) {
+        container.getChildren().clear();
 
-                // Check if game is over
-                Platform.runLater(() -> {
-                    if (checkGameOver()) {
-                        return;
-                    }
-                });
+        for (Card card : player.getHand()) {
+            ImageView cardView = new ImageView();
+            cardView.setFitHeight(82);
+            cardView.setFitWidth(56);
+            cardView.setPreserveRatio(true);
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                Platform.runLater(() -> handleGameException(e));
+            if (faceDown || player.isEliminated()) {
+                cardView.setImage(loadImage("backcard.png"));
+            } else {
+                cardView.setImage(loadCardImage(card));
+                cardView.setOnMouseClicked(e -> handleCardClickEvent(card));
+                cardView.setStyle("-fx-cursor: hand;");
             }
-            // }
 
-            // Return turn to human player
-            Platform.runLater(this::updateCurrentTurn);
-        });
-    }
-
-    /**
-     * Updates the display of human player's cards.
-     * Shows cards face up with click handlers.
-     */
-    private void updateHumanPlayerCards() {
-        humanPlayerCardsBox.getChildren().clear();
-
-        // Get cards from model
-        // List<Card> cards = game.getHumanPlayerCards();
-
-        // for (int i = 0; i < cards.size(); i++) {
-        //     ImageView cardView = createCardImageView(cards.get(i), true);
-        //     final int cardIndex = i;
-        //     cardView.setOnMouseClicked(e -> handleHumanCardClick(cardIndex));
-        //     humanPlayerCardsBox.getChildren().add(cardView);
-        // }
-    }
-
-    /**
-     * Updates the display of machine players' cards.
-     * Shows cards face down.
-     */
-    private void updateMachinePlayerCards() {
-        // Update each machine player's card display
-        updateMachinePlayerBox(machinePlayer1CardsBox, 1);
-        if (numberOfMachinePlayers >= 2) {
-            updateMachinePlayerBox(machinePlayer2CardsBox, 2);
-        }
-        if (numberOfMachinePlayers >= 3) {
-            updateMachinePlayerBox(machinePlayer3CardsBox, 3);
+            container.getChildren().add(cardView);
         }
     }
 
     /**
-     * Updates a specific machine player's card box.
-     *
-     * @param box the HBox to update.
-     * @param playerNumber the machine player number (1, 2, or 3).
+     * Handles card click for human player.
      */
-    private void updateMachinePlayerBox(HBox box, int playerNumber) {
-        box.getChildren().clear();
-
-        // Get number of cards for this player
-        // int cardCount = game.getMachinePlayerCardCount(playerNumber);
-
-        // Add face-down card images
-        // for (int i = 0; i < cardCount; i++) {
-        //     ImageView cardView = createCardImageView(null, false);
-        //     box.getChildren().add(cardView);
-        // }
-    }
-
-    /**
-     * Creates an ImageView for a card.
-     *
-     * @param card the card object (null for face-down cards).
-     * @param faceUp true if card should be shown face up, false for face down.
-     * @return ImageView representing the card.
-     */
-    private ImageView createCardImageView(Object card, boolean faceUp) {
-        ImageView cardView = new ImageView();
-        cardView.setFitWidth(80);
-        cardView.setFitHeight(120);
-        cardView.setPreserveRatio(true);
-
-        if (faceUp && card != null) {
-            // Load card image based on card value
-            // String imagePath = "/com/example/miniproyecto3/images/cards/" + card.getImageName();
-            // cardView.setImage(new Image(getClass().getResourceAsStream(imagePath)));
-        } else {
-            // Load card back image
-            // cardView.setImage(new Image(getClass().getResourceAsStream("/com/example/miniproyecto3/images/cards/back.png")));
+    private void handleCardClickEvent(Card card) {
+        if (!isHumanTurn.get()) {
+            return;
         }
 
-        return cardView;
-    }
-
-    /**
-     * Updates the card currently displayed on the table.
-     */
-    private void updateTableCard() {
-        // Card currentCard = game.getCurrentTableCard();
-        // tableCardImageView.setImage(getCardImage(currentCard));
-    }
-
-    /**
-     * Updates the sum label with the current table sum.
-     */
-    private void updateTableSum() {
-        // int sum = game.getTableSum();
-        // tableSumLabel.setText("Suma: " + sum);
-    }
-
-    /**
-     * Updates the current turn indicator.
-     */
-    private void updateCurrentTurn() {
-        // String currentPlayer = game.getCurrentPlayerName();
-        // currentTurnLabel.setText("Turno: " + currentPlayer);
-    }
-
-    /**
-     * Checks if the game is over.
-     * If only one player remains, declares them the winner and shows final stage.
-     *
-     * @return true if the game is over, false otherwise.
-     */
-    private boolean checkGameOver() {
-        // if (game.isGameOver()) {
-        //     String winner = game.getWinner();
-        //     showFinalStage(winner);
-        //     return true;
-        // }
-        return false;
-    }
-
-    /**
-     * Shows the final stage with the game winner.
-     *
-     * @param winner the name of the winning player.
-     */
-    private void showFinalStage(String winner) {
         try {
-            executorService.shutdown();
-            CincuentazoFinalStage finalStage = CincuentazoFinalStage.getInstance();
-            finalStage.getController().setWinner(winner);
-            CincuentazoGameStage.deleteInstance();
-        } catch (IOException e) {
-            e.printStackTrace();
+            int effect = card.calculateEffect(game.getTableSum());
+            int newSum = game.getTableSum() + effect;
+
+            if (newSum > 50) {
+                showError("This card would make sum = " + newSum + " (>50). Choose another!");
+                return;
+            }
+
+            humanPlayer.getHand().remove(card);
+            updateTableCard(card);
+            updateSum(newSum);
+            humanPlayer.drawCard(game.getDeck());
+
+            enableHumanCards(false);
+            waitingForHuman.set(false);
+
+        } catch (EmptyDeckException e) {
+            showError("Cannot draw card: " + e.getMessage());
         }
     }
 
     /**
-     * Handles the action of pressing the "Help" button.
-     * Opens the help screen with game rules.
-     *
-     * @param event the ActionEvent triggered by clicking the help button.
+     * Updates the table card display.
      */
-    @FXML
-    void handleHelp(ActionEvent event) {
+    private void updateTableCard(Card card) {
+        tableCardImage.setImage(loadCardImage(card));
+    }
+
+    /**
+     * Updates the sum display.
+     */
+    private void updateSum(int sum) {
+        sumLabel.setText("Suma: " + sum);
+    }
+
+    /**
+     * Loads a card image based on card properties.
+     */
+    private Image loadCardImage(Card card) {
+        String suitMap = switch (card.getSuit()) {
+            case "Hearts" -> "Corazones";
+            case "Diamonds" -> "Diamantes";
+            case "Clubs" -> "Treboles";
+            case "Spades" -> "Picas";
+            default -> card.getSuit();
+        };
+
+        String filename = card.getSymbol() + suitMap + ".png";
+        return loadImage("cards/" + filename);
+    }
+
+    /**
+     * Loads an image from resources.
+     */
+    private Image loadImage(String path) {
         try {
-            CincuentazoHelpStage.getInstance();
-            CincuentazoWelcomeStage.deleteInstance();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Error", "Failed to open help screen.");
+            return new Image(getClass().getResourceAsStream("/cincuentazo/images/" + path));
+        } catch (Exception e) {
+            System.err.println("Failed to load image: " + path);
+            return null;
         }
     }
 
     /**
-     * Handles exceptions thrown by the game model.
-     * Displays appropriate alerts for different exception types.
-     *
-     * @param e the exception to handle.
+     * Enables or disables human cards for interaction.
      */
-    private void handleGameException(Exception e) {
-        // Handle custom exceptions like:
-        // - InvalidCardPlayException
-        // - NoCardsAvailableException
-        // - PlayerEliminatedException
+    private void enableHumanCards(boolean enable) {
+        // This would set the clickable state
+        // Implementation depends on how cards are rendered
+    }
 
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error de Juego");
-        alert.setHeaderText(null);
-        alert.setContentText(e.getMessage());
+    /**
+     * Highlights the current player.
+     */
+    private void highlightCurrentPlayer(Player player) {
+        // Add visual feedback (glow, border, etc.)
+        // Implementation depends on your design
+    }
+
+    /**
+     * Shows elimination message.
+     */
+    private void showElimination(Player player) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Player Eliminated");
+        alert.setHeaderText(player.getName() + " has been eliminated!");
+        alert.setContentText("No valid cards to play.");
         alert.showAndWait();
     }
 
     /**
-     * Handles the back button action.
-     * Returns to the welcome screen.
-     *
-     * @param event the ActionEvent triggered by the back button.
+     * Eliminates a player.
      */
-    @FXML
-    void handleBack(ActionEvent event) {
-        executorService.shutdown();
-        try {
-            CincuentazoWelcomeStage.getInstance();
-            CincuentazoGameStage.deleteInstance();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void eliminatePlayer(Player player) {
+        List<Card> cards = player.eliminate();
+        for (Card c : cards) {
+            game.getDeck().addCardToBottom(c);
         }
+        updateUI();
     }
 
     /**
-     * Displays an alert dialog with the specified title and message.
-     *
-     * @param title   the title of the alert dialog.
-     * @param message the message to display in the alert.
+     * Shows the winner.
      */
-    private void showAlert(String title, String message) {
+    private void showWinner() {
+        Player winner = null;
+        for (Player p : game.getPlayers()) {
+            if (!p.isEliminated()) {
+                winner = p;
+                break;
+            }
+        }
+
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("🎉 Winner: " + (winner != null ? winner.getName() : "No one"));
+        alert.setContentText("Congratulations!");
+        alert.showAndWait();
+    }
+
+    /**
+     * Shows an error dialog.
+     */
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Game Error");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Handles the "Back" button to return to menu.
+     */
+    @FXML
+    private void handleBack() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cincuentazo/cincuentazo-menu-view.fxml"));
+            Parent root = loader.load();
+
+            CincuentazoWelcomeController welcomeController = loader.getController();
+            welcomeController.setStage(stage);
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Cincuentazo");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles the "Help" button.
+     */
+    @FXML
+    private void handleHelp() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cincuentazo/cincuentazo-help-view.fxml"));
+            Parent root = loader.load();
+
+            CincuentazoHelpController helpController = loader.getController();
+            helpController.setStage(stage);
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

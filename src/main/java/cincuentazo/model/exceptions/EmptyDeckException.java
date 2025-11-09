@@ -1,4 +1,4 @@
-package com.example.cincuentazodemo1.model.exceptions;
+package cincuentazo.model.exceptions;
 
 public class EmptyDeckException extends Exception {
     public EmptyDeckException(String message) {

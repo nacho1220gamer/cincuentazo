@@ -1,6 +1,6 @@
 package cincuentazo;
 
-import cincuentazo.view.CincuentazoWelcomeStage;
+import cincuentazo.view.WelcomeStage;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -27,7 +27,7 @@ public class Main extends Application {
     /**
      * Starts the JavaFX application.
      * <p>
-     * Opens the {@link CincuentazoWelcomeStage} when the application launches.
+     * Opens the {@link WelcomeStage} when the application launches.
      * </p>
      *
      * @param primaryStage the primary stage for this application
@@ -35,6 +35,6 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
-        CincuentazoWelcomeStage.getInstance();
+        WelcomeStage.getInstance();
     }
 }
