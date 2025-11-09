@@ -16,6 +16,12 @@
     -fx-background-size: cover;
 }
 
+.backgroundWin {
+    -fx-background-image: url("../images/winBackground.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+}
+
 .backgroundHelp {
     -fx-background-image: url("../images/helpBackground.png");
     -fx-background-repeat: no-repeat;
@@ -66,6 +72,20 @@
 
 .my-button7 {
     -fx-background-image: url("../images/back.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.my-button8 {
+    -fx-background-image: url("../images/menu.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-color: transparent;
+}
+
+.my-button9 {
+    -fx-background-image: url("../images/exit2.png");
     -fx-background-repeat: no-repeat;
     -fx-background-size: cover;
     -fx-background-color: transparent;
