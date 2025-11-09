@@ -1,125 +1,141 @@
 package cincuentazo.controller;
 
-import cincuentazo.view.GameStage;
+import cincuentazo.view.CincuentazoGameStage;
+import cincuentazo.view.CincuentazoHelpStage;
+import cincuentazo.view.CincuentazoWelcomeStage;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
+import javafx.application.Platform;
 
 import java.io.IOException;
 
 /**
- * Controller for the welcome/menu screen.
- * Handles player selection and navigation to game or help screens.
+ * Controller for the welcome/menu view of Cincuentazo game.
+ * Handles navigation between different views and game initialization.
  */
 public class CincuentazoWelcomeController {
 
     @FXML
-    private Pane seleccionnumerojugadores;
+    private Pane playerQuantitySelector;
 
-    private Stage stage;
+    private int selectedPlayers = 0;
 
     /**
-     * Sets the stage for this controller.
-     * @param stage the main application stage
+     * Initializes the controller.
+     * Called automatically after FXML loading.
      */
-    public void setStage(Stage stage) {
-        this.stage = stage;
+    @FXML
+    public void initialize() {
+        // Ensure player selector is hidden initially
+        if (playerQuantitySelector != null) {
+            playerQuantitySelector.setVisible(false);
+        }
     }
 
     /**
-     * Handles the "Play" button click.
-     * Shows the player selection panel.
+     * Shows the player quantity selector panel.
+     * Triggered when the "Play" button is clicked.
+     *
+     * @param event the action event
      */
     @FXML
-    private void handlePlay() {
-        seleccionnumerojugadores.setVisible(true);
+    private void handlePlay(ActionEvent event) {
+        if (playerQuantitySelector != null) {
+            playerQuantitySelector.setVisible(true);
+        }
     }
 
     /**
-     * Handles the "Help" button click.
-     * Opens the help screen.
+     * Starts a game with 1 machine player.
+     *
+     * @param event the action event
      */
     @FXML
-    private void handleHelp() {
+    private void handleOnePlayer(ActionEvent event) {
+        selectedPlayers = 1;
+        startGame();
+    }
+
+    /**
+     * Starts a game with 2 machine players.
+     *
+     * @param event the action event
+     */
+    @FXML
+    private void handleTwoPlayers(ActionEvent event) {
+        selectedPlayers = 2;
+        startGame();
+    }
+
+    /**
+     * Starts a game with 3 machine players.
+     *
+     * @param event the action event
+     */
+    @FXML
+    private void handleThreePlayers(ActionEvent event) {
+        selectedPlayers = 3;
+        startGame();
+    }
+
+    /**
+     * Initializes and displays the game stage.
+     * Closes the welcome stage.
+     */
+    private void startGame() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cincuentazo/cincuentazo-help-view.fxml"));
-            Parent root = loader.load();
+            // First, get the game stage instance
+            CincuentazoGameStage gameStage = CincuentazoGameStage.getInstance();
 
-            CincuentazoHelpController helpController = loader.getController();
-            helpController.setStage(stage);
+            // Then, initialize the game with the selected number of players
+            gameStage.getController().initializeGame(selectedPlayers);
 
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            // Finally, close the welcome stage
+            CincuentazoWelcomeStage.deleteInstance();
+
         } catch (IOException e) {
+            System.err.println("Error starting game: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     /**
-     * Handles the "Exit" button click.
-     * Closes the application.
+     * Hides the player quantity selector panel.
+     * Returns to the main menu view.
+     *
+     * @param event the action event
      */
     @FXML
-    private void handleExit() {
-        stage.close();
+    private void handleBack(ActionEvent event) {
+        if (playerQuantitySelector != null) {
+            playerQuantitySelector.setVisible(false);
+        }
     }
 
     /**
-     * Handles selection of 1 CPU player.
+     * Opens the help/instructions window.
+     *
+     * @param event the action event
      */
     @FXML
-    private void handleOnePlayer() {
-        startGame(1);
-    }
-
-    /**
-     * Handles selection of 2 CPU players.
-     */
-    @FXML
-    private void handleTwoPlayers() {
-        startGame(2);
-    }
-
-    /**
-     * Handles selection of 3 CPU players.
-     */
-    @FXML
-    private void handleThreePlayers() {
-        startGame(3);
-    }
-
-    /**
-     * Handles the "Back" button from player selection.
-     * Hides the player selection panel.
-     */
-    @FXML
-    private void handleBack() {
-        seleccionnumerojugadores.setVisible(false);
-    }
-
-    /**
-     * Starts the game with the specified number of CPU players.
-     * @param numCPUs number of CPU players (1-3)
-     */
-    private void startGame(int numCPUs) {
+    private void handleHelp(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/cincuentazo/cincuentazo-game-view.fxml"));
-            Parent root = loader.load();
-
-            CincuentazoGameController gameController = loader.getController();
-            gameController.setStage(stage);
-            gameController.initializeGame(numCPUs);
-
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("Cincuentazo - Playing against " + numCPUs + " CPU(s)");
-            stage.show();
+            CincuentazoHelpStage.getInstance();
         } catch (IOException e) {
+            System.err.println("Error opening help window: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Exits the application.
+     *
+     * @param event the action event
+     */
+    @FXML
+    private void handleExit(ActionEvent event) {
+        Platform.exit();
+        System.exit(0);
     }
 }

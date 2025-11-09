@@ -39,7 +39,6 @@ public class Game {
 
         initializePlayers(numMachines);
         dealInitialCards();
-        startGame();
     }
 
     /**
@@ -173,6 +172,10 @@ public class Game {
             System.out.println("\nWinner: " + (winner != null ? winner.getName() : "No one"));
             gameOver = true;
         }
+    }
+
+    public void addTableSum(int value) {
+        tableSum += value;
     }
 
     public int getTableSum() {

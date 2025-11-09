@@ -1,7 +1,7 @@
-package cincuentazo.controller;
+/*package cincuentazo.controller;
 
-import cincuentazo.view.GameStage;
-import cincuentazo.view.WelcomeStage;
+import cincuentazo.view.CincuentazoGameStage;
+import cincuentazo.view.CincuentazoWelcomeStage;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 /**
  * Controller for the winner/game over screen.
  * Displays game results and handles navigation to menu or replay.
- */
+
 public class CincuentazoWinnerController {
 
     @FXML private Label lblWinnerName;
@@ -27,7 +27,7 @@ public class CincuentazoWinnerController {
     /**
      * Sets the stage for this controller.
      * @param stage the winner screen stage
-     */
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -38,7 +38,7 @@ public class CincuentazoWinnerController {
      * @param isHumanWinner true if human won
      * @param totalTurns total turns in the game
      * @param eliminatedPlayers elimination order
-     */
+
     public void setWinnerData(String winnerName, boolean isHumanWinner, int totalTurns, String eliminatedPlayers) {
         if (isHumanWinner) {
             lblWinnerTitle.setText("¡VICTORIA!");
@@ -67,7 +67,7 @@ public class CincuentazoWinnerController {
     /**
      * Loads the winner's avatar image.
      * @param imageName name of the image file
-     */
+
     private void loadWinnerImage(String imageName) {
         try {
             Image image = new Image(getClass().getResourceAsStream("/cincuentazo/images/" + imageName));
@@ -79,8 +79,8 @@ public class CincuentazoWinnerController {
 
     /**
      * Sets the number of CPUs for replay functionality.
-     * @param numCPUs number of CPU players
-     */
+     * @Param numCPUs number of CPU players
+
     public void setLastNumCPUs(int numCPUs) {
         this.lastNumCPUs = numCPUs;
     }
@@ -88,32 +88,32 @@ public class CincuentazoWinnerController {
     /**
      * Handles the "Play Again" button.
      * Starts a new game with the same number of CPUs.
-     */
+
     @FXML
     private void handlePlayAgain() {
         stage.close();
-        GameStage gameStage = new GameStage(lastNumCPUs);
+        CincuentazoGameStage gameStage = new CincuentazoGameStage(lastNumCPUs);
         gameStage.show();
     }
 
     /**
      * Handles the "Main Menu" button.
      * Returns to the welcome screen.
-     */
+
     @FXML
     private void handleMainMenu() {
         stage.close();
-        WelcomeStage welcomeStage = WelcomeStage.getInstance();
+        CincuentazoWelcomeStage welcomeStage = CincuentazoWelcomeStage.getInstance();
         welcomeStage.show();
     }
 
     /**
      * Handles the "Exit" button.
      * Closes the application.
-     */
+
     @FXML
     private void handleExit() {
         stage.close();
-        WelcomeStage.deleteInstance();
+        CincuentazoWelcomeStage.deleteInstance();
     }
-}
+}*/

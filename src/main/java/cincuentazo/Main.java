@@ -1,40 +1,35 @@
-package cincuentazo;
+package cincuentazo.view;
 
-import cincuentazo.view.WelcomeStage;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 /**
- * Main entry point of the Cincuentazo card game application.
- * <p>
- * This class extends {@link javafx.application.Application} and is responsible
- * for launching the JavaFX application and opening the welcome stage.
- * </p>
+ * Main entry point for the Cincuentazo game application.
+ * Initializes and displays the welcome/menu screen.
  */
 public class Main extends Application {
 
     /**
-     * The main method launches the JavaFX application.
-     *
-     * @param args command-line arguments (not used)
+     * Starts the JavaFX application.
+     * @param primaryStage the primary stage for the application
      */
-    public static void main(String[] args) {
-        launch(args);
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            CincuentazoWelcomeStage.getInstance();
+        } catch (IOException e) {
+            System.err.println("Error loading main view: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
-     * Starts the JavaFX application.
-     * <p>
-     * Opens the {@link WelcomeStage} when the application launches.
-     * </p>
-     *
-     * @param primaryStage the primary stage for this application
-     * @throws IOException if the welcome stage fails to load
+     * Main method to launch the application.
+     * @param args command line arguments
      */
-    @Override
-    public void start(Stage primaryStage) throws IOException {
-        WelcomeStage.getInstance();
+    public static void main(String[] args) {
+        launch(args);
     }
 }
