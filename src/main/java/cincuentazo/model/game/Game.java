@@ -121,9 +121,9 @@ public class Game {
             Thread.sleep((int) (2000 + Math.random() * 2000)); // 2–4s delay
             Card played = cpu.playCard(tableSum);
             int effect = played.calculateEffect(tableSum);
+            System.out.println(played);
             tableCards.push(played);
             tableSum += effect;
-            System.out.println(cpu.getName() + " played " + played + " → Sum: " + tableSum);
             cpu.drawCard(deck);
         } catch (InvalidMoveException e) {
             handleElimination(cpu, e.getMessage());
@@ -138,9 +138,9 @@ public class Game {
         try {
             Card played = player.playCard(tableSum);
             int effect = played.calculateEffect(tableSum);
+            System.out.println(played);
             tableCards.push(played);
             tableSum += effect;
-            System.out.println(player.getName() + " played " + played + " → Sum: " + tableSum);
             player.drawCard(deck);
         } catch (InvalidMoveException e) {
             handleElimination(player, e.getMessage());
@@ -189,6 +189,8 @@ public class Game {
     public List<Player> getPlayers() {
         return players;
     }
+
+    public void setTopCard(Card card) { tableCards.push(card); }
 
     public Card getTopCard() {
         return tableCards.peek();

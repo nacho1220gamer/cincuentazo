@@ -5,6 +5,8 @@ import cincuentazo.model.exceptions.EmptyDeckException;
 import cincuentazo.model.exceptions.InvalidMoveException;
 import cincuentazo.model.game.Game;
 import cincuentazo.model.player.Player;
+import cincuentazo.view.CincuentazoGameStage;
+import cincuentazo.view.CincuentazoWinnerStage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -308,7 +310,6 @@ public class CincuentazoGameController {
      * Handles clicking on a card in the human player's hand.
      */
     private void handleCardClick(Card card, ImageView cardView) {
-        System.out.println("Card clicked: " + card);
         if (!humanTurnActive.get()) {
             showWarning("Not Your Turn", "Please wait for your turn to play.");
             return;
@@ -371,7 +372,7 @@ public class CincuentazoGameController {
      * Updates the table with a newly played card.
      */
     private void updateTableWithCard(Card card, int effect) {
-        // int oldSum = game.getTableSum();
+        game.setTopCard(card);
         game.addTableSum(effect);
 
         updateTableCard();
@@ -446,6 +447,7 @@ public class CincuentazoGameController {
     private void updateTableCard() {
         if (tableCardImage != null && game.getTopCard() != null) {
             String imagePath = getCardImagePath(game.getTopCard());
+            System.out.println(imagePath);
             var is = getClass().getResourceAsStream(imagePath);
             try {
                 if(is != null) {
@@ -495,7 +497,7 @@ public class CincuentazoGameController {
         List<Card> hand = player.getHand();
         System.out.println("Mano de " + player.getName() + ": " + hand);
 
-        // Limpiar y redibujar la mano actual
+        // Clean y re-draw the current hand
         cardContainer.getChildren().clear();
         // mantenemos cardViewMap para referencia, pero limpiamos y volvemos a llenar
         if (cardViewMap == null) cardViewMap = new HashMap<>();
@@ -564,9 +566,13 @@ public class CincuentazoGameController {
      */
     private ImageView createCardView(Card card, boolean faceUp) {
         ImageView cardView = new ImageView();
-        System.out.println(cardView);
-        cardView.setFitHeight(53.0);
-        cardView.setFitWidth(38.0);
+        if(!faceUp) {
+            cardView.setFitHeight(53.0);
+            cardView.setFitWidth(38.0);
+        } else {
+            cardView.setFitHeight(82.0);
+            cardView.setFitWidth(56.0);
+        }
         cardView.setPreserveRatio(true);
 
         String imagePath = faceUp
@@ -615,9 +621,8 @@ public class CincuentazoGameController {
 
         return "/com/example/miniproyecto3/images/cards/" + symbol + suitSpanish + ".png";
     }
-
     /**
-     * Shows the game over dialog.
+     * Shows the game over screen (winner stage).
      */
     private void showGameOver() {
         List<Player> players = game.getPlayers();
@@ -626,18 +631,29 @@ public class CincuentazoGameController {
                 .findFirst()
                 .orElse(null);
 
-        String winnerName = (winner != null) ? winner.getName() : "No one";
-        boolean humanWon = winner != null && !winner.isMachine();
+        if (winner != null) {
+            boolean humanWon = !winner.isMachine();
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Game Over");
-        alert.setHeaderText(humanWon ? "🎉 Congratulations! 🎉" : "Game Finished");
-        alert.setContentText("Winner: " + winnerName +
-                (humanWon ? "\n\nYou won!" : "\n\nBetter luck next time!"));
+            try {
+                // Cierra la ventana actual del juego
+                CincuentazoGameStage.deleteInstance();
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent()) {
-            handleBack(null);
+                if (humanWon) {
+                    // 🏆 Si el humano gana → muestra pantalla de ganador
+                    CincuentazoWinnerStage.getInstance();
+                    System.out.println("Game over. Winner: " + winner.getName() + " (Jugador humano)");
+                } else {
+                    // 💀 Si gana la máquina → regresa al menú o muestra un alert
+                    System.out.println("Game over. Winner: " + winner.getName() + " (Máquina)");
+
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Error loading end screen: " + e.getMessage());
+            }
+        } else {
+            System.out.println("No winner found — no one survived?");
         }
     }
 
