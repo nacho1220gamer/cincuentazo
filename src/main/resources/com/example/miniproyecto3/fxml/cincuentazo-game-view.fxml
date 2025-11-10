@@ -92,41 +92,45 @@
                 </VBox>
             </right>
             <bottom>
-                <VBox fx:id="bottomVBox" prefHeight="87.0" prefWidth="534.0" BorderPane.alignment="CENTER">
+                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <children>
-                        <HBox alignment="CENTER" prefHeight="102.0" prefWidth="522.0">
+                        <!-- 🔹 Aquí se añadió fx:id="testCard" solo para la prueba -->
+                        <Pane prefHeight="100.0" prefWidth="114.0" />
+                        <VBox fx:id="bottomVBox" alignment="CENTER" prefHeight="100.0" prefWidth="260.0">
                             <children>
-                                <!-- 🔹 Aquí se añadió fx:id="testCard" solo para la prueba -->
-                                <Pane prefHeight="87.0" prefWidth="79.0" />
-                                <ImageView fx:id="testCard" fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/cards/7Corazones.png" />
-                                    </image>
-                                </ImageView>
-                                <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/cards/3Treboles.png" />
-                                    </image>
-                                </ImageView>
-                                <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/cards/2Picas.png" />
-                                    </image>
-                                </ImageView>
-                                <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
-                                    <image>
-                                        <Image url="@../images/cards/QDiamantes.png" />
-                                    </image>
-                                </ImageView>
-                                <Pane prefHeight="87.0" prefWidth="75.0">
+                                <HBox alignment="CENTER" prefHeight="87.0" prefWidth="270.0">
                                     <children>
-                                        <Button layoutX="4.0" layoutY="10.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="66.0" styleClass="my-buttonTakeCard" />
+                                        <ImageView fx:id="testCard" fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/cards/7Corazones.png" />
+                                            </image>
+                                        </ImageView>
+                                        <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/cards/3Treboles.png" />
+                                            </image>
+                                        </ImageView>
+                                        <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/cards/2Picas.png" />
+                                            </image>
+                                        </ImageView>
+                                        <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../images/cards/QDiamantes.png" />
+                                            </image>
+                                        </ImageView>
                                     </children>
-                                </Pane>
+                                </HBox>
                             </children>
-                        </HBox>
+                        </VBox>
+                        <Pane prefHeight="100.0" prefWidth="115.0">
+                            <children>
+                                <Button layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="66.0" styleClass="my-buttonTakeCard" />
+                            </children>
+                        </Pane>
                     </children>
-                </VBox>
+                </HBox>
             </bottom>
             <center>
                 <VBox alignment="BOTTOM_CENTER" prefHeight="107.0" prefWidth="188.0" BorderPane.alignment="CENTER">
