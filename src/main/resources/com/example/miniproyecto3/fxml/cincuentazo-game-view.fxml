@@ -126,7 +126,7 @@
                         </VBox>
                         <Pane prefHeight="100.0" prefWidth="115.0">
                             <children>
-                                <Button layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="66.0" styleClass="my-buttonTakeCard" />
+                                <Button layoutX="13.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleTakeCard" prefHeight="68.0" prefWidth="66.0" styleClass="my-buttonTakeCard" />
                             </children>
                         </Pane>
                     </children>

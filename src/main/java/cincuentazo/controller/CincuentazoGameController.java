@@ -294,24 +294,31 @@ public class CincuentazoGameController {
      * Handles the human player's turn.
      */
     private void playHumanTurn(Player player) throws InterruptedException {
-        humanTurnActive.set(true);
-        Platform.runLater(() -> {
-            updateUI();
-            showInfo("Your Turn!", "Select a card to play from your hand.");
-        });
-
-        // Wait for human to play
-        while (humanTurnActive.get() && gameRunning && !game.isGameOver()) {
-            Thread.sleep(100);
-        }
+        if (selectedCard == null) {
+            humanTurnActive.set(true);
+            Platform.runLater(() -> {
+                updateUI();
+                showInfo("Your Turn!", "Select a card to play from your hand.");
+            });
+            }
+            // Wait for human to play
+            while (humanTurnActive.get() && gameRunning && !game.isGameOver()) {
+                Thread.sleep(100);
+            }
     }
 
     /**
      * Handles clicking on a card in the human player's hand.
      */
     private void handleCardClick(Card card, ImageView cardView) {
+
         if (!humanTurnActive.get()) {
             showWarning("Not Your Turn", "Please wait for your turn to play.");
+            return;
+        }
+
+        if (selectedCard != null) {
+            showWarning("Ya jugaste", "Solo puedes jugar una carta por turno.");
             return;
         }
 
@@ -335,10 +342,10 @@ public class CincuentazoGameController {
         }
 
         // Play the card
+        selectedCard = card;
         playHumanCard(card);
 
         humanTurnActive.set(false);
-        advanceTurn();
     }
 
 
@@ -346,26 +353,15 @@ public class CincuentazoGameController {
      * Plays the selected card for the human player.
      */
     private void playHumanCard(Card card) {
-        try {
             humanPlayer.getHand().remove(card);
             int effect = card.calculateEffect(game.getTableSum());
 
             // Update table
             updateTableWithCard(card, effect);
 
-            // Draw a new card
-            humanPlayer.drawCard(game.getDeck());
-
             // Update UI
             updateUI();
 
-            // End turn
-            humanTurnActive.set(false);
-
-        } catch (EmptyDeckException e) {
-            handleDeckEmpty();
-            humanTurnActive.set(false);
-        }
     }
 
     /**
@@ -523,7 +519,7 @@ public class CincuentazoGameController {
                         DropShadow glow = new DropShadow();
                         glow.setRadius(25);
                         glow.setSpread(0.7);
-                        glow.setColor(isPlayable ? Color.LIME : Color.RED);
+                        glow.setColor(isPlayable ? Color.WHITE : Color.RED);
                         cardView.setEffect(glow);
                         cardView.setStyle("-fx-cursor: " + (isPlayable ? "hand" : "not-allowed") + ";");
 
@@ -700,6 +696,26 @@ public class CincuentazoGameController {
         } catch (IOException e) {
             System.err.println("Error loading help: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleTakeCard(ActionEvent event) {
+        try {
+            // Draw a new card
+            humanPlayer.drawCard(game.getDeck());
+
+            // Update UI
+            updateUI();
+
+            // End turn
+            humanTurnActive.set(false);
+            advanceTurn();
+            selectedCard = null;
+
+        } catch (EmptyDeckException e) {
+            handleDeckEmpty();
+            humanTurnActive.set(false);
         }
     }
 
