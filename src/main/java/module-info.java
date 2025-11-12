@@ -2,6 +2,7 @@ module cincuentazo {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
+    //requires cincuentazo;
 
     // Export packages that exist
     exports cincuentazo.view;

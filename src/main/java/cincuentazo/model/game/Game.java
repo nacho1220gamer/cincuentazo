@@ -17,17 +17,13 @@ import java.util.*;
 public class Game {
 
     private final IDeck deck;
-    public IDeck getDeck() {
-        return deck;
-    }
-    public void stop(){
-        gameOver=true;
-    }
     private final List<Player> players;
     private final Queue<Player> turnQueue;
     private final Stack<Card> tableCards;
     private int tableSum;
     private boolean gameOver;
+
+    private int currentPlayerIndex;
 
     public Game(int numMachines) throws EmptyDeckException {
         this.deck = new Deck();
@@ -72,106 +68,204 @@ public class Game {
     }
 
     /**
-     * Starts the game loop using threads for machine turns.
+     * Gets the current player whose turn it is.
+     * @return current player or null if no active players
      */
-    public void startGame() {
-        new Thread(() -> {
-            while (!gameOver) {
-                try {
-                    playTurn();
-                    Thread.sleep(1000); // short delay for visualization
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
-                }
-            }
-        }).start();
+    public Player getCurrentPlayer() {
+        List<Player> activePlayers = getActivePlayers();
+
+        if (activePlayers.isEmpty()) {
+            return null;
+        }
+
+        if (currentPlayerIndex >= activePlayers.size()) {
+            currentPlayerIndex = 0;
+        }
+
+        return activePlayers.get(currentPlayerIndex);
     }
 
     /**
-     * Plays one complete turn (human or machine).
+     * Gets all players that are not eliminated.
      */
-    private void playTurn() throws EmptyDeckException, InvalidMoveException {
-        Player current = turnQueue.poll();
-
-        if (current == null || current.isEliminated()) {
-            checkForWinner();
-            return;
-        }
-
-        System.out.println("\n🔹 Turn: " + current.getName());
-        if (current.isMachine()) {
-            machinePlay(current);
-        } else {
-            humanPlay(current);
-        }
-
-        // Return player to queue if still active
-        if (!current.isEliminated()) {
-            turnQueue.add(current);
-        }
-
-        checkForWinner();
+    public List<Player> getActivePlayers() {
+        return players.stream()
+                .filter(p -> !p.isEliminated())
+                .toList();
     }
 
     /**
-     * Simulates a machine player's turn (with delay).
+     * Advances to the next player's turn.
      */
-    private void machinePlay(Player cpu) throws EmptyDeckException {
-        try {
-            Thread.sleep((int) (2000 + Math.random() * 2000)); // 2–4s delay
-            Card played = cpu.playCard(tableSum);
-            int effect = played.calculateEffect(tableSum);
-            System.out.println(played);
-            tableCards.push(played);
-            tableSum += effect;
-            cpu.drawCard(deck);
-        } catch (InvalidMoveException e) {
-            handleElimination(cpu, e.getMessage());
-        } catch (InterruptedException ignored) {}
-    }
+    public void advanceTurn() {
+        currentPlayerIndex++;
 
-    /**
-     * Handles the human player's turn (can later connect with GUI events).
-     */
-    private void humanPlay(Player player) throws EmptyDeckException {
-        // For now, simulate automatic play (GUI will handle in future)
-        try {
-            Card played = player.playCard(tableSum);
-            int effect = played.calculateEffect(tableSum);
-            System.out.println(played);
-            tableCards.push(played);
-            tableSum += effect;
-            player.drawCard(deck);
-        } catch (InvalidMoveException e) {
-            handleElimination(player, e.getMessage());
-        }
-    }
-
-    /**
-     * Handles when a player is eliminated.
-     */
-    private void handleElimination(Player player, String reason) {
-        System.out.println("Eliminated " + reason);
-        List<Card> eliminatedCards = player.eliminate();
-        for (Card c : eliminatedCards) {
-            deck.addCardToBottom(c);
-        }
-    }
-
-    /**
-     * Checks if only one player remains active → declares winner.
-     */
-    private void checkForWinner() {
-        long activePlayers = players.stream().filter(p -> !p.isEliminated()).count();
-
-        if (activePlayers == 1) {
-            Player winner = players.stream()
-                    .filter(p -> !p.isEliminated())
-                    .findFirst()
-                    .orElse(null);
-            System.out.println("\nWinner: " + (winner != null ? winner.getName() : "No one"));
+        // Check for winner after each turn
+        if (getActivePlayers().size() == 1) {
             gameOver = true;
         }
+    }
+
+    /**
+     * Validates if a card can be played without exceeding 50.
+     * @param card the card to validate
+     * @return true if the card is valid, false otherwise
+     */
+    public boolean isValidMove(Card card) {
+        int effect = card.calculateEffect(tableSum);
+        int newSum = tableSum + effect;
+        return newSum <= 50;
+    }
+
+    /**
+     * Checks if a player has any valid cards to play.
+     * @param player the player to check
+     * @return true if player has at least one valid card
+     */
+    public boolean hasValidCards(Player player) {
+        return player.getHand().stream()
+                .anyMatch(this::isValidMove);
+    }
+
+    /**
+     * Plays a card for a player (human or machine).
+     * Updates the table sum and removes the card from player's hand.
+     * @param player the player playing the card
+     * @param card the card to play
+     * @throws InvalidMoveException if the move is invalid
+     */
+    public void playCard(Player player, Card card) throws InvalidMoveException {
+        if (!isValidMove(card)) {
+            throw new InvalidMoveException("Card would exceed 50");
+        }
+
+        // Remove card from player's hand
+        player.getHand().remove(card);
+
+        // Update table
+        int effect = card.calculateEffect(tableSum);
+        tableCards.push(card);
+        tableSum += effect;
+
+        System.out.println(player.getName() + " played " + card + " → Table sum: " + tableSum);
+    }
+
+    /**
+     * Executes a machine player's turn.
+     * Tries to play a valid card, or gets eliminated.
+     * @param cpu the machine player
+     * @return the card played, or null if eliminated
+     */
+    public Card executeMachineTurn(Player cpu) {
+        try {
+            // Machine strategy: play a valid card
+            Card played = cpu.playCard(tableSum);
+
+            // Play the card
+            playCard(cpu, played);
+
+            // Draw new card
+            try {
+                cpu.drawCard(deck);
+            } catch (EmptyDeckException e) {
+                recycleDeck();
+            }
+
+            return played;
+
+        } catch (InvalidMoveException e) {
+            // Machine has no valid cards - eliminate
+            eliminatePlayer(cpu);
+            return null;
+        }
+    }
+
+    /**
+     * Attempts to play a card for the human player.
+     * @param player the human player
+     * @param card the card selected
+     * @throws InvalidMoveException if the card cannot be played
+     */
+    public void executeHumanPlay(Player player, Card card) throws InvalidMoveException {
+        if (!hasValidCards(player)) {
+            // No valid cards - player must be eliminated
+            eliminatePlayer(player);
+            throw new InvalidMoveException("No valid cards to play");
+        }
+
+        // Play the card
+        playCard(player, card);
+    }
+
+    /**
+     * Handles drawing a card for the human player.
+     * @param player the human player
+     */
+    public void executeHumanDraw(Player player) {
+        try {
+            player.drawCard(deck);
+        } catch (EmptyDeckException e) {
+            recycleDeck();
+        }
+    }
+
+    /**
+     * Eliminates a player and returns their cards to the deck.
+     * @param player the player to eliminate
+     */
+    public void eliminatePlayer(Player player) {
+        List<Card> eliminatedCards = player.eliminate();
+
+        // Return cards to bottom of deck
+        for (Card card : eliminatedCards) {
+            deck.addCardToBottom(card);
+        }
+
+        System.out.println(player.getName() + " has been eliminated!");
+
+        // Check if game is over
+        if (getActivePlayers().size() == 1) {
+            gameOver = true;
+        }
+    }
+
+    /**
+     * Recycles the table cards back into the deck when it's empty.
+     */
+    private void recycleDeck() {
+        if (tableCards.size() > 1) {
+            Card topCard = tableCards.pop(); // Keep top card
+
+            // Shuffle remaining cards back into deck
+            List<Card> cardsToRecycle = new ArrayList<>(tableCards);
+            Collections.shuffle(cardsToRecycle);
+
+            for (Card card : cardsToRecycle) {
+                deck.addCardToBottom(card);
+            }
+
+            tableCards.clear();
+            tableCards.push(topCard);
+
+            System.out.println("Deck recycled! Cards returned from table.");
+        }
+    }
+
+    /**
+     * Gets the winner of the game (if any).
+     * @return the winning player, or null if no winner yet
+     */
+    public Player getWinner() {
+        List<Player> active = getActivePlayers();
+        return active.size() == 1 ? active.get(0) : null;
+    }
+
+    public IDeck getDeck() {
+        return deck;
+    }
+
+    public void stop(){
+        gameOver=true;
     }
 
     public void addTableSum(int value) {
@@ -193,7 +287,7 @@ public class Game {
     public void setTopCard(Card card) { tableCards.push(card); }
 
     public Card getTopCard() {
-        return tableCards.peek();
+        return tableCards.isEmpty() ? null : tableCards.peek();
     }
 }
 

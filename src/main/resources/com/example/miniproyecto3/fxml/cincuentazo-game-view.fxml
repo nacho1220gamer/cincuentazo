@@ -18,14 +18,11 @@
             <left>
                 <VBox fx:id="leftVBox" alignment="TOP_CENTER" prefHeight="131.0" prefWidth="153.0" BorderPane.alignment="CENTER">
                     <children>
-                        <ImageView fitHeight="48.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../images/player4.png" />
-                            </image>
-                            <VBox.margin>
-                                <Insets bottom="5.0" />
-                            </VBox.margin>
-                        </ImageView>
+                  <ImageView fitHeight="50.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/player3.png" />
+                     </image>
+                  </ImageView>
                         <HBox prefHeight="75.0" prefWidth="149.0">
                             <children>
                                 <ImageView fitHeight="53.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
@@ -56,9 +53,9 @@
             <right>
                 <VBox fx:id="rightVBox" alignment="TOP_CENTER" prefHeight="131.0" prefWidth="137.0" BorderPane.alignment="CENTER">
                     <children>
-                        <ImageView fitHeight="50.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="48.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../images/player3.png" />
+                                <Image url="@../images/player4.png" />
                             </image>
                             <VBox.margin>
                                 <Insets bottom="5.0" />

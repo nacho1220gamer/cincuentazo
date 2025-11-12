@@ -118,3 +118,94 @@
     -fx-background-color: rgba(255, 255, 255, 0);
     -fx-effect: dropshadow(gaussian, rgb(255, 166, 0),20,0.3,0,0);
 }
+
+.my-alert {
+    -fx-background-color: linear-gradient(to bottom, #832a2a, #390808);
+    -fx-border-color: linear-gradient(to bottom, #f8bc59, #d37300);
+    -fx-border-width: 3px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 25px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 15, 0, 0, 5);
+}
+
+/* Texto del contenido */
+.my-alert > .content.label {
+    -fx-text-fill: #fff5e0;
+    -fx-font-size: 20px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-wrap-text: true;
+}
+
+/* Encabezado */
+.my-alert > .header-panel {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffeaa7;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* 🔸 Botón solo dentro de la alerta */
+.my-alert .button {
+    -fx-background-color: linear-gradient(to bottom, #ffc15e, #bd6801);
+    -fx-text-fill: #301801;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0, 0, 2);
+}
+
+/* Hover del botón (solo dentro de la alerta) */
+.my-alert .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #ffde9a, #f1a324);
+    -fx-effect: dropshadow(gaussian, rgba(255,200,0,0.6), 10, 0.3, 0, 0);
+}
+
+/* 🔷 ALERTA DE INFORMACIÓN */
+.my-info-alert {
+    -fx-background-color: linear-gradient(to bottom, #2a4b83, #081839);
+    -fx-border-color: linear-gradient(to bottom, #79a8ff, #264d9b);
+    -fx-border-width: 3px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 25px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 15, 0, 0, 5);
+}
+
+/* Texto del contenido */
+.my-info-alert > .content.label {
+    -fx-text-fill: #e8f0ff;
+    -fx-font-size: 20px;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-wrap-text: true;
+}
+
+/* Encabezado */
+.my-info-alert > .header-panel {
+    -fx-background-color: transparent;
+    -fx-text-fill: #a3c4ff;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+/* Botón solo dentro de la alerta */
+.my-info-alert .button {
+    -fx-background-color: linear-gradient(to bottom, #5e9cff, #014abd);
+    -fx-text-fill: #f0f6ff;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0, 0, 2);
+}
+
+/* Hover del botón */
+.my-info-alert .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #a0c3ff, #2d6ef1);
+    -fx-effect: dropshadow(gaussian, rgba(150,200,255,0.6), 10, 0.3, 0, 0);
+}

@@ -3,7 +3,9 @@ package cincuentazo.model.deck;
 import cincuentazo.model.exceptions.EmptyDeckException;
 import cincuentazo.model.card.Card;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -80,4 +82,27 @@ public class Deck extends DeckAdapter {
         cards.addAll(recycledCards);
         shuffle();
     }
+
+// Inner static class responsible for creating card
+
+    private static class CardFactory {
+        private static final String[] SUITS= {"Hearts", "Diamonds", "Clubs", "Spades"};
+        private static final String[] Symbols= {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+
+        //Creates a standart 52-card deck
+
+        static List<Card> createStandardDeck() {
+            List<Card> deck = new ArrayList<>();
+            for (String suit : SUITS) {
+                for (String symbol : Symbols) {
+                    deck.add(new Card(symbol, suit));
+                }
+
+            }
+            return deck;
+        }
+
+    }
 }
+
+

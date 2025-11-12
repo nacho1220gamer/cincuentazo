@@ -6,6 +6,7 @@ import cincuentazo.model.exceptions.InvalidMoveException;
 import cincuentazo.model.game.Game;
 import cincuentazo.model.player.Player;
 import cincuentazo.view.CincuentazoGameStage;
+import cincuentazo.view.CincuentazoHelpStage;
 import cincuentazo.view.CincuentazoWinnerStage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -15,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
@@ -25,8 +27,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -123,8 +127,6 @@ public class CincuentazoGameController {
      */
     private void showGameStart(int numPlayers) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Game Start");
-        alert.setHeaderText("¡Cincuentazo!");
         alert.setContentText("Playing against " + numPlayers + " CPU opponent(s).\nYour turn is first. Click a card to play!");
         alert.show();
     }
@@ -274,7 +276,6 @@ public class CincuentazoGameController {
                 // Update UI
                 updateUI();
 
-                showInfo("CPU Turn", cpu.getName() + " played " + played + "\nNew sum: " + game.getTableSum());
             });
 
             // advance turn after the CPU finishes its action, or it will loop infinitely
@@ -298,13 +299,12 @@ public class CincuentazoGameController {
             humanTurnActive.set(true);
             Platform.runLater(() -> {
                 updateUI();
-                showInfo("Your Turn!", "Select a card to play from your hand.");
             });
-            }
-            // Wait for human to play
-            while (humanTurnActive.get() && gameRunning && !game.isGameOver()) {
-                Thread.sleep(100);
-            }
+        }
+        // Wait for human to play
+        while (humanTurnActive.get() && gameRunning && !game.isGameOver()) {
+            Thread.sleep(100);
+        }
     }
 
     /**
@@ -318,7 +318,7 @@ public class CincuentazoGameController {
         }
 
         if (selectedCard != null) {
-            showWarning("Ya jugaste", "Solo puedes jugar una carta por turno.");
+            showWarning("Ya jugaste", "Solo puedes jugar una carta por turno. Toma una carta");
             return;
         }
 
@@ -345,7 +345,6 @@ public class CincuentazoGameController {
         selectedCard = card;
         playHumanCard(card);
 
-        humanTurnActive.set(false);
     }
 
 
@@ -353,14 +352,14 @@ public class CincuentazoGameController {
      * Plays the selected card for the human player.
      */
     private void playHumanCard(Card card) {
-            humanPlayer.getHand().remove(card);
-            int effect = card.calculateEffect(game.getTableSum());
+        humanPlayer.getHand().remove(card);
+        int effect = card.calculateEffect(game.getTableSum());
 
-            // Update table
-            updateTableWithCard(card, effect);
+        // Update table
+        updateTableWithCard(card, effect);
 
-            // Update UI
-            updateUI();
+        // Update UI
+        updateUI();
 
     }
 
@@ -416,6 +415,8 @@ public class CincuentazoGameController {
             Platform.runLater(this::showGameOver);
         }
     }
+
+
 
     /**
      * Updates the entire UI.
@@ -502,7 +503,7 @@ public class CincuentazoGameController {
         for (Card card : hand) {
             ImageView cardView = createCardView(card, !player.isMachine()); // faceUp para humano, faceDown para CPU
 
-            if (!player.isMachine()) { // si es humano, agregamos listeners y efectos
+            if (!player.isMachine()) {
                 final Card currentCard = card;
 
                 int effect = card.calculateEffect(game.getTableSum());
@@ -536,7 +537,6 @@ public class CincuentazoGameController {
                     cardView.setScaleX(1.0);
                     cardView.setScaleY(1.0);
                     cardView.setStyle("-fx-cursor: hand;");
-                    // animación de regreso
                     javafx.animation.TranslateTransition drop =
                             new javafx.animation.TranslateTransition(javafx.util.Duration.millis(150), cardView);
                     drop.setFromY(cardView.getTranslateY());
@@ -631,15 +631,12 @@ public class CincuentazoGameController {
             boolean humanWon = !winner.isMachine();
 
             try {
-                // Cierra la ventana actual del juego
                 CincuentazoGameStage.deleteInstance();
 
                 if (humanWon) {
-                    // 🏆 Si el humano gana → muestra pantalla de ganador
                     CincuentazoWinnerStage.getInstance();
                     System.out.println("Game over. Winner: " + winner.getName() + " (Jugador humano)");
                 } else {
-                    // 💀 Si gana la máquina → regresa al menú o muestra un alert
                     System.out.println("Game over. Winner: " + winner.getName() + " (Máquina)");
 
                 }
@@ -680,21 +677,18 @@ public class CincuentazoGameController {
         }
     }
 
+
     /**
-     * Handles the help button.
+     * Opens the help/instructions window.
+     *
+     * @param event the action event
      */
     @FXML
     private void handleHelp(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/miniproyecto3/fxml/cincuentazo-help-view.fxml"));
-            Parent helpView = loader.load();
-
-            Stage stage = (Stage) bottomVBox.getScene().getWindow();
-            Scene scene = new Scene(helpView);
-            stage.setScene(scene);
-            stage.show();
+            CincuentazoHelpStage.getInstance();
         } catch (IOException e) {
-            System.err.println("Error loading help: " + e.getMessage());
+            System.err.println("Error opening help window: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -738,9 +732,19 @@ public class CincuentazoGameController {
     private void showInfo(String title, String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.initStyle(StageStyle.UNDECORATED);
             alert.setTitle(title);
             alert.setHeaderText(null);
             alert.setContentText(message);
+            DialogPane dialogPane = alert.getDialogPane();
+            URL css = getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
+            if (css != null) {
+                dialogPane.getStylesheets().add(css.toExternalForm());
+            } else {
+                System.err.println("⚠️ No se encontró el archivo CSS en /css/Styles.css");
+            }
+            dialogPane.getStyleClass().add("my-info-alert");
+
             alert.showAndWait();
         });
     }
@@ -751,9 +755,19 @@ public class CincuentazoGameController {
     private void showWarning(String title, String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.initStyle(StageStyle.UNDECORATED);
             alert.setTitle(title);
             alert.setHeaderText(null);
             alert.setContentText(message);
+            DialogPane dialogPane = alert.getDialogPane();
+            URL css = getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
+            if (css != null) {
+                dialogPane.getStylesheets().add(css.toExternalForm());
+            } else {
+                System.err.println("⚠️ No se encontró el archivo CSS en /css/Styles.css");
+            }
+
+            dialogPane.getStyleClass().add("my-alert");
             alert.showAndWait();
         });
     }
