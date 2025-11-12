@@ -68,6 +68,7 @@ public class CincuentazoGameController {
     private Thread gameThread;
     private Map<ImageView, Card> cardViewMap;
     private int currentPlayerIndex = 0;
+    private boolean cardPlayedThisTurn = false;
 
     //Para hacer pruebas
     @FXML
@@ -75,46 +76,21 @@ public class CincuentazoGameController {
 
     /**
      * Initializes the game with the specified number of machine players.
-     * @param numMachines number of CPU opponents (1-3)
      */
     public void initializeGame(int numMachines) {
         try {
             game = new Game(numMachines);
-            humanPlayer = game.getPlayers().get(0); // Human is always first
+            humanPlayer = game.getPlayers().get(0);
             cardViewMap = new HashMap<>();
             gameRunning = true;
 
             assignPlayerPositions(numMachines);
 
-            // Initial UI update
             Platform.runLater(() -> {
                 updateUI();
                 showGameStart(numMachines);
             });
 
-            Platform.runLater(() -> {
-                if (testCard != null) {
-                    testCard.setOnMouseEntered(e -> System.out.println("Entró en carta del FXML"));
-                    testCard.setOnMouseExited(e -> System.out.println("Salió de carta del FXML"));
-                } else {
-                    System.out.println("testCard es null (no está enlazado al FXML)");
-                }
-
-                // 🔹 NUEVO: detectar todas las cartas visibles del jugador (bottomVBox)
-                if (bottomVBox != null) {
-                    for (var node : bottomVBox.lookupAll(".image-view")) {
-                        if (node instanceof ImageView imageView) {
-                            imageView.setOnMouseEntered(e -> System.out.println("Mouse sobre una carta"));
-                            imageView.setOnMouseExited(e -> System.out.println("Mouse salió de una carta"));
-                        }
-                    }
-                    System.out.println("Eventos agregados a todas las cartas del jugador.");
-                } else {
-                    System.out.println("bottomVBox es null — no se pudieron buscar las cartas.");
-                }
-            });
-
-            // Start game loop in separate thread
             startGameLoop();
 
         } catch (EmptyDeckException e) {
@@ -127,7 +103,19 @@ public class CincuentazoGameController {
      */
     private void showGameStart(int numPlayers) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.setTitle("Game Start");
+        alert.setHeaderText("¡Cincuentazo!");
         alert.setContentText("Playing against " + numPlayers + " CPU opponent(s).\nYour turn is first. Click a card to play!");
+        alert.setGraphic(null);
+        DialogPane dialogPane = alert.getDialogPane();
+        URL css = getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
+        if (css != null) {
+            dialogPane.getStylesheets().add(css.toExternalForm());
+        } else {
+            System.err.println("⚠️ No se encontró el archivo CSS en /css/Styles.css");
+        }
+        dialogPane.getStyleClass().add("my-info-alert");
         alert.show();
     }
 
@@ -161,30 +149,28 @@ public class CincuentazoGameController {
     }
 
     /**
-     * Main game loop that manages turns between players.
+     * Main game loop - now just orchestrates turns and UI updates.
      */
     private void startGameLoop() {
         gameThread = new Thread(() -> {
             try {
                 while (gameRunning && !game.isGameOver()) {
-                    Player currentPlayer = getCurrentPlayer();
+                    Player currentPlayer = game.getCurrentPlayer();
 
-                    if (currentPlayer == null || currentPlayer.isEliminated()) {
-                        advanceTurn();
+                    if (currentPlayer == null) {
+                        game.advanceTurn();
                         continue;
                     }
 
                     Platform.runLater(() -> highlightCurrentPlayer(currentPlayer));
 
                     if (currentPlayer.isMachine()) {
-                        // Machine player turn
-                        playMachineTurn(currentPlayer);
+                        playMachineTurnUI(currentPlayer);
                     } else {
-                        // Human player turn
-                        playHumanTurn(currentPlayer);
+                        playHumanTurnUI();
                     }
 
-                    Thread.sleep(500); // Small delay between actions
+                    Thread.sleep(500);
                 }
 
                 if (gameRunning) {
@@ -192,7 +178,6 @@ public class CincuentazoGameController {
                 }
 
             } catch (InterruptedException e) {
-                System.out.println("Game thread interrupted");
                 Thread.currentThread().interrupt();
             }
         });
@@ -201,28 +186,109 @@ public class CincuentazoGameController {
     }
 
     /**
-     * Gets the current player whose turn it is.
+     * Handles machine player turn (UI side).
      */
-    private Player getCurrentPlayer() {
-        List<Player> activePlayers = game.getPlayers().stream()
-                .filter(p -> !p.isEliminated())
-                .toList();
+    private void playMachineTurnUI(Player cpu) {
+        try {
+            // Realistic delay
+            int delay = 2000 + (int)(Math.random() * 2000);
+            Thread.sleep(delay);
 
-        if (activePlayers.isEmpty()) { return null;}
+            // Execute turn in model
+            Card played = game.executeMachineTurn(cpu);
 
-        // This is a simple round-robin approach
-        // You may need to adjust based on your Game class implementation
-        if (currentPlayerIndex >= activePlayers.size()) {
-            currentPlayerIndex = 0;
+            Platform.runLater(() -> {
+                if (played != null) {
+                    // Successfully played
+                    updateUI();
+                } else {
+                    // Player was eliminated
+                    showWarning("Player Eliminated!", cpu.getName() + " has been eliminated!");
+                    updateUI();
+                }
+            });
+
+            game.advanceTurn();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
-        return activePlayers.get(currentPlayerIndex);
     }
 
     /**
-     * Advances to the next player's turn.
+     * Handles human player turn (UI side).
      */
-    private void advanceTurn() {
-        currentPlayerIndex++;
+    private void playHumanTurnUI() throws InterruptedException {
+        humanTurnActive.set(true);
+        cardPlayedThisTurn = false;
+        Platform.runLater(this::updateUI);
+
+        // Wait for human action
+        while (humanTurnActive.get() && gameRunning && !game.isGameOver()) {
+            Thread.sleep(100);
+        }
+    }
+
+    /**
+     * Handles clicking on a card (human player).
+     */
+    private void handleCardClick(Card card, ImageView cardView) {
+        if (!humanTurnActive.get()) {
+            showWarning("Not Your Turn", "Please wait for your turn.");
+            return;
+        }
+
+        // Check if already played a card this turn
+        if (cardPlayedThisTurn) {
+            showWarning("Already Played", "You already played a card this turn!\nClick 'Take Card' to draw a card.");
+            return;
+        }
+
+        // Check if card is valid
+        if (!game.isValidMove(card)) {
+            if (!game.hasValidCards(humanPlayer)) {
+                // No valid cards - eliminate player
+                game.eliminatePlayer(humanPlayer);
+                showWarning("Eliminated!", "You have no valid cards to play.");
+                humanTurnActive.set(false);
+                cardPlayedThisTurn = false;
+                game.advanceTurn();
+                updateUI();
+            } else {
+                // Player has other valid cards
+                int effect = card.calculateEffect(game.getTableSum());
+                int newSum = game.getTableSum() + effect;
+                showWarning("Invalid Move", "This card would exceed 50 (new sum: " + newSum + ").\nChoose another card.");
+            }
+            return;
+        }
+
+        // Play the card
+        try {
+            game.executeHumanPlay(humanPlayer, card);
+            cardPlayedThisTurn = true;
+            updateUI();
+        } catch (InvalidMoveException e) {
+            showWarning("Invalid Move", e.getMessage());
+        }
+    }
+
+    /**
+     * Handles the "Take Card" button.
+     */
+    @FXML
+    private void handleTakeCard(ActionEvent event) {
+        if (!humanTurnActive.get()) {
+            showWarning("Not Your Turn", "Please wait for your turn.");
+            return;
+        }
+
+        game.executeHumanDraw(humanPlayer);
+        updateUI();
+
+        humanTurnActive.set(false);
+        cardPlayedThisTurn = false;
+        game.advanceTurn();
     }
 
     /**
@@ -249,121 +315,6 @@ public class CincuentazoGameController {
     }
 
     /**
-     * Executes a machine player's turn.
-     */
-    private void playMachineTurn(Player cpu) {
-        try {
-            // Random delay between 2-4 seconds for realism
-            int delay = 2000 + (int)(Math.random() * 2000);
-            Thread.sleep(delay);
-
-            // Try to play a card
-            Card played = cpu.playCard(game.getTableSum());
-            int effect = played.calculateEffect(game.getTableSum());
-
-            // Update game state (this should be in Game class ideally)
-            Platform.runLater(() -> {
-                // Update table
-                updateTableWithCard(played, effect);
-
-                // Draw new card
-                try {
-                    cpu.drawCard(game.getDeck());
-                } catch (EmptyDeckException e) {
-                    handleDeckEmpty();
-                }
-
-                // Update UI
-                updateUI();
-
-            });
-
-            // advance turn after the CPU finishes its action, or it will loop infinitely
-            advanceTurn();
-
-        } catch (InvalidMoveException e) {
-            // If the CPU made an invalid move, handle elimination and still advance the turn
-            Platform.runLater(() -> {
-                handlePlayerElimination(cpu, e.getMessage());
-            });
-            advanceTurn();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-    /**
-     * Handles the human player's turn.
-     */
-    private void playHumanTurn(Player player) throws InterruptedException {
-        if (selectedCard == null) {
-            humanTurnActive.set(true);
-            Platform.runLater(() -> {
-                updateUI();
-            });
-        }
-        // Wait for human to play
-        while (humanTurnActive.get() && gameRunning && !game.isGameOver()) {
-            Thread.sleep(100);
-        }
-    }
-
-    /**
-     * Handles clicking on a card in the human player's hand.
-     */
-    private void handleCardClick(Card card, ImageView cardView) {
-
-        if (!humanTurnActive.get()) {
-            showWarning("Not Your Turn", "Please wait for your turn to play.");
-            return;
-        }
-
-        if (selectedCard != null) {
-            showWarning("Ya jugaste", "Solo puedes jugar una carta por turno. Toma una carta");
-            return;
-        }
-
-        // Check if card is valid
-        int effect = card.calculateEffect(game.getTableSum());
-        int newSum = game.getTableSum() + effect;
-
-        if (newSum > 50) {
-            boolean hasValidCard = humanPlayer.getHand().stream()
-                    .anyMatch(c -> game.getTableSum() + c.calculateEffect(game.getTableSum()) <= 50);
-
-            if (hasValidCard) {
-                showWarning("Invalid Move", "This card would exceed 50 (new sum: " + newSum + ").\nChoose another card.");
-                return;
-            } else {
-                // No valid cards - player is eliminated
-                handlePlayerElimination(humanPlayer, "No valid cards to play");
-                humanTurnActive.set(false);
-                return;
-            }
-        }
-
-        // Play the card
-        selectedCard = card;
-        playHumanCard(card);
-
-    }
-
-
-    /**
-     * Plays the selected card for the human player.
-     */
-    private void playHumanCard(Card card) {
-        humanPlayer.getHand().remove(card);
-        int effect = card.calculateEffect(game.getTableSum());
-
-        // Update table
-        updateTableWithCard(card, effect);
-
-        // Update UI
-        updateUI();
-
-    }
-
-    /**
      * Updates the table with a newly played card.
      */
     private void updateTableWithCard(Card card, int effect) {
@@ -383,40 +334,7 @@ public class CincuentazoGameController {
         updateUI();
     }
 
-    /**
-     * Handles when a player is eliminated.
-     */
-    private void handlePlayerElimination(Player player, String reason) {
-        List<Card> eliminatedCards = player.eliminate();
-
-        // Return cards to deck
-        for (Card c : eliminatedCards) {
-            game.getDeck().addCardToBottom(c);
-        }
-
-        updateUI();
-
-        showWarning("Player Eliminated!", player.getName() + " has been eliminated!\n" + reason);
-
-        // Check for winner
-        checkForWinner();
-    }
-
-    /**
-     * Checks if there's a winner.
-     */
-    private void checkForWinner() {
-        long activePlayers = game.getPlayers().stream()
-                .filter(p -> !p.isEliminated())
-                .count();
-
-        if (activePlayers == 1) {
-            gameRunning = false;
-            Platform.runLater(this::showGameOver);
-        }
-    }
-
-
+    // ============ UI UPDATE METHODS ============
 
     /**
      * Updates the entire UI.
@@ -503,7 +421,7 @@ public class CincuentazoGameController {
         for (Card card : hand) {
             ImageView cardView = createCardView(card, !player.isMachine()); // faceUp para humano, faceDown para CPU
 
-            if (!player.isMachine()) {
+            if (!player.isMachine()) { // si es humano, agregamos listeners y efectos
                 final Card currentCard = card;
 
                 int effect = card.calculateEffect(game.getTableSum());
@@ -537,6 +455,7 @@ public class CincuentazoGameController {
                     cardView.setScaleX(1.0);
                     cardView.setScaleY(1.0);
                     cardView.setStyle("-fx-cursor: hand;");
+                    // animación de regreso
                     javafx.animation.TranslateTransition drop =
                             new javafx.animation.TranslateTransition(javafx.util.Duration.millis(150), cardView);
                     drop.setFromY(cardView.getTranslateY());
@@ -617,17 +536,15 @@ public class CincuentazoGameController {
 
         return "/com/example/miniproyecto3/images/cards/" + symbol + suitSpanish + ".png";
     }
+
     /**
-     * Shows the game over screen (winner stage).
+     * Shows the winner screen.
      */
     private void showGameOver() {
-        List<Player> players = game.getPlayers();
-        Player winner = players.stream()
-                .filter(p -> !p.isEliminated())
-                .findFirst()
-                .orElse(null);
+        Player winner = game.getWinner();
 
         if (winner != null) {
+            shutdown();
             boolean humanWon = !winner.isMachine();
 
             try {
@@ -635,33 +552,25 @@ public class CincuentazoGameController {
 
                 if (humanWon) {
                     CincuentazoWinnerStage.getInstance();
-                    System.out.println("Game over. Winner: " + winner.getName() + " (Jugador humano)");
+                    System.out.println("Winner: " + winner.getName() + " (Human)");
                 } else {
-                    System.out.println("Game over. Winner: " + winner.getName() + " (Máquina)");
-
+                    System.out.println("Winner: " + winner.getName() + " (Machine)");
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
-                System.err.println("Error loading end screen: " + e.getMessage());
             }
-        } else {
-            System.out.println("No winner found — no one survived?");
         }
     }
+
+    // ============ NAVIGATION METHODS ============
 
     /**
      * Handles the back button.
      */
     @FXML
     private void handleBack(ActionEvent event) {
-        gameRunning = false;
-        if (gameThread != null && gameThread.isAlive()) {
-            gameThread.interrupt();
-        }
-        if (game != null) {
-            game.stop();
-        }
+        shutdown();
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/miniproyecto3/fxml/cincuentazo-menu-view.fxml"));
@@ -690,26 +599,6 @@ public class CincuentazoGameController {
         } catch (IOException e) {
             System.err.println("Error opening help window: " + e.getMessage());
             e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleTakeCard(ActionEvent event) {
-        try {
-            // Draw a new card
-            humanPlayer.drawCard(game.getDeck());
-
-            // Update UI
-            updateUI();
-
-            // End turn
-            humanTurnActive.set(false);
-            advanceTurn();
-            selectedCard = null;
-
-        } catch (EmptyDeckException e) {
-            handleDeckEmpty();
-            humanTurnActive.set(false);
         }
     }
 
@@ -744,7 +633,6 @@ public class CincuentazoGameController {
                 System.err.println("⚠️ No se encontró el archivo CSS en /css/Styles.css");
             }
             dialogPane.getStyleClass().add("my-info-alert");
-
             alert.showAndWait();
         });
     }
@@ -779,6 +667,9 @@ public class CincuentazoGameController {
         gameRunning = false;
         if (gameThread != null && gameThread.isAlive()) {
             gameThread.interrupt();
+        }
+        if (game != null) {
+            game.stop();
         }
     }
 }
