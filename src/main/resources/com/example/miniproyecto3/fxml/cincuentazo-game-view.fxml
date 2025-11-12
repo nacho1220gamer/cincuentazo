@@ -132,7 +132,7 @@
             <center>
                 <VBox alignment="BOTTOM_CENTER" prefHeight="107.0" prefWidth="188.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Label fx:id="tableSumLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="108.0" style="-fx-border-color: #e19c1b; -fx-border-radius: 10; -fx-border-width: 1.5;" text="Suma: 0" textFill="#e19c1b">
+                        <Label fx:id="tableSumLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="108.0" style="-fx-border-color: #e19c1b; -fx-border-radius: 10; -fx-border-width: 1.5;" text="Total: 0" textFill="#e19c1b">
                             <font>
                                 <Font name="Serif Regular" size="24.0" />
                             </font>

@@ -113,7 +113,7 @@ public class CincuentazoGameController {
         if (css != null) {
             dialogPane.getStylesheets().add(css.toExternalForm());
         } else {
-            System.err.println("⚠️ No se encontró el archivo CSS en /css/Styles.css");
+            System.err.println("⚠️ CSS not found in /css/Styles.css");
         }
         dialogPane.getStyleClass().add("my-info-alert");
         alert.show();
@@ -314,25 +314,27 @@ public class CincuentazoGameController {
         }
     }
 
-    /**
-     * Updates the table with a newly played card.
-     */
-    private void updateTableWithCard(Card card, int effect) {
-        game.setTopCard(card);
-        game.addTableSum(effect);
+    // ====== Deprecated methods ==========
 
-        updateTableCard();
-        updateTableSum();
-    }
-
-    /**
-     * Handles when the deck is empty and needs to be recycled.
-     */
-    private void handleDeckEmpty() {
-        showInfo("Deck Empty", "Recycling cards from the table...");
-        // Game class should handle this
-        updateUI();
-    }
+//    /**
+//     * Updates the table with a newly played card.
+//     */
+//    private void updateTableWithCard(Card card, int effect) {
+//        game.setTopCard(card);
+//        game.addTableSum(effect);
+//
+//        updateTableCard();
+//        updateTableSum();
+//    }
+//
+//    /**
+//     * Handles when the deck is empty and needs to be recycled.
+//     */
+//    private void handleDeckEmpty() {
+//        showInfo("Deck Empty", "Recycling cards from the table...");
+//        // Game class should handle this
+//        updateUI();
+//    }
 
     // ============ UI UPDATE METHODS ============
 
