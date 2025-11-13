@@ -19,7 +19,7 @@
         <Pane prefHeight="344.0" prefWidth="600.0">
             <children>
                 <Button layoutX="126.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleExit"
-                        prefHeight="98.0" prefWidth="107.0" styleClass="my-button2">
+                        prefHeight="98.0" prefWidth="107.0" styleClass="my-button2" style="-fx-cursor: hand;">
                     <effect>
                         <DropShadow height="37.21" offsetY="-10.0" radius="19.21" width="41.63">
                             <color>
@@ -30,7 +30,7 @@
                 </Button>
 
                 <Button layoutX="241.0" layoutY="8.0" mnemonicParsing="false" onAction="#handlePlay"
-                        prefHeight="98.0" prefWidth="107.0" styleClass="my-button1">
+                        prefHeight="98.0" prefWidth="107.0" styleClass="my-button1" style="-fx-cursor: hand;">
                     <effect>
                         <DropShadow height="36.85" offsetY="-10.0" radius="32.665" width="95.81">
                             <color>
@@ -41,7 +41,7 @@
                 </Button>
 
                 <Button layoutX="360.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleHelp"
-                        prefHeight="98.0" prefWidth="107.0" styleClass="my-button3">
+                        prefHeight="98.0" prefWidth="107.0" styleClass="my-button3" style="-fx-cursor: hand;">
                     <effect>
                         <DropShadow height="69.28" offsetY="-10.0" radius="40.7725" width="95.81">
                             <color>
@@ -55,16 +55,16 @@
                       styleClass="background2" visible="false">
                     <children>
                         <Button layoutX="14.0" layoutY="63.0" mnemonicParsing="false" onAction="#handleOnePlayer"
-                                prefHeight="89.0" prefWidth="91.0" styleClass="my-button4" />
+                                prefHeight="89.0" prefWidth="91.0" styleClass="my-button4" style="-fx-cursor: hand;" />
 
                         <Button layoutX="117.0" layoutY="62.0" mnemonicParsing="false" onAction="#handleTwoPlayers"
-                                prefHeight="89.0" prefWidth="91.0" styleClass="my-button5" />
+                                prefHeight="89.0" prefWidth="91.0" styleClass="my-button5" style="-fx-cursor: hand;" />
 
                         <Button layoutX="218.0" layoutY="63.0" mnemonicParsing="false" onAction="#handleThreePlayers"
-                                prefHeight="89.0" prefWidth="91.0" styleClass="my-button6" />
+                                prefHeight="89.0" prefWidth="91.0" styleClass="my-button6" style="-fx-cursor: hand;" />
 
                         <Button layoutX="105.0" layoutY="158.0" mnemonicParsing="false" onAction="#handleBack"
-                                prefHeight="40.0" prefWidth="113.0" styleClass="my-button7" />
+                                prefHeight="40.0" prefWidth="113.0" styleClass="my-button7" style="-fx-cursor: hand;" />
                     </children>
                 </Pane>
 

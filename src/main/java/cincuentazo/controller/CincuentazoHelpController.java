@@ -1,5 +1,6 @@
 package cincuentazo.controller;
 
+import cincuentazo.view.CincuentazoHelpStage;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.stage.Stage;
@@ -13,16 +14,28 @@ import javafx.event.ActionEvent;
  */
 public class CincuentazoHelpController {
 
+    private String callerContext = "welcome"; // Default context
+
+    /**
+     * Sets the context from which Help was opened.
+     * This allows the controller to know where it came from.
+     *
+     * @param context "game" or "welcome"
+     */
+    public void setCallerContext(String context) {
+        this.callerContext = context;
+    }
+
     /**
      * Handles the action event triggered when the user clicks the "Back" button.
-     * This method retrieves the current window (Stage) from the event source
-     * and closes it, effectively returning the user to the previous screen.
+     * This method closes the Help window using the Singleton pattern,
+     * returning the user to the previous screen (Game or Welcome).
      *
      * @param event the {@link ActionEvent} triggered by the button click.
      */
     @FXML
     private void handleBack(ActionEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.close();
+        CincuentazoHelpStage.deleteInstance();
+        // The parent window (Game or Welcome) remains visible behind the modal
     }
 }

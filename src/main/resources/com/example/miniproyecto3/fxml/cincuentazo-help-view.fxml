@@ -158,6 +158,6 @@
                 </VBox>
             </children>
         </HBox>
-        <Button layoutX="3.0" layoutY="3.0" mnemonicParsing="false" onAction="#handleBack" prefHeight="57.0" prefWidth="54.0" styleClass="button-back" />
+        <Button layoutX="3.0" layoutY="3.0" mnemonicParsing="false" onAction="#handleBack" prefHeight="57.0" prefWidth="54.0" styleClass="button-back" style="-fx-cursor: hand;" />
     </children>
 </Pane>

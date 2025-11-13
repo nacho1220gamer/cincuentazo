@@ -7,6 +7,7 @@ import cincuentazo.model.game.Game;
 import cincuentazo.model.player.Player;
 import cincuentazo.view.CincuentazoGameStage;
 import cincuentazo.view.CincuentazoHelpStage;
+import cincuentazo.view.CincuentazoWelcomeStage;
 import cincuentazo.view.CincuentazoWinnerStage;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -70,6 +71,8 @@ public class CincuentazoGameController {
     private int currentPlayerIndex = 0;
     private boolean cardPlayedThisTurn = false;
 
+    private final AlertManager alertManager = new AlertManager(); //de la clase interna
+
     //Para hacer pruebas
     @FXML
     private ImageView testCard;
@@ -94,33 +97,36 @@ public class CincuentazoGameController {
             startGameLoop();
 
         } catch (EmptyDeckException e) {
-            showError("Game Initialization Error", "Could not start the game: " + e.getMessage());
+            alertManager.showError("Game Initialization Error", "Could not start the game: " + e.getMessage());
         }
     }
 
     /**
-     * Shows game start message.
-     */
-    private void showGameStart(int numPlayers) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.initStyle(StageStyle.UNDECORATED);
-        alert.setTitle("Game Start");
-        alert.setHeaderText("¡Cincuentazo!");
-        alert.setContentText("Playing against " + numPlayers + " CPU opponent(s).\nYour turn is first. Click a card to play!");
-        alert.setGraphic(null);
-        DialogPane dialogPane = alert.getDialogPane();
-        URL css = getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
-        if (css != null) {
-            dialogPane.getStylesheets().add(css.toExternalForm());
-        } else {
-            System.err.println("⚠️ CSS not found in /css/Styles.css");
-        }
-        dialogPane.getStyleClass().add("my-info-alert");
-        alert.show();
-    }
+     * Shows game start message.*/
+
+     private void showGameStart(int numPlayers) {
+     Alert alert = new Alert(Alert.AlertType.INFORMATION);
+     alert.initStyle(StageStyle.UNDECORATED);
+     alert.setTitle("Game Start");
+     alert.setHeaderText("¡Cincuentazo!");
+     alert.setContentText("Playing against " + numPlayers + " CPU opponent(s).\nYour turn is first. Click a card to play!");
+     alert.setGraphic(null);
+     DialogPane dialogPane = alert.getDialogPane();
+     URL css = getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
+     if (css != null) {
+     dialogPane.getStylesheets().add(css.toExternalForm());
+     } else {
+     System.err.println("⚠️ CSS not found in /css/Styles.css");
+     }
+     dialogPane.getStyleClass().add("my-info-alert");
+     alert.show();
+     }
+
+
 
     /**
      * Assigns each player to a position on the screen.
+     *
      * @param numMachines number of CPU opponents
      */
     private void assignPlayerPositions(int numMachines) {
@@ -191,7 +197,7 @@ public class CincuentazoGameController {
     private void playMachineTurnUI(Player cpu) {
         try {
             // Realistic delay
-            int delay = 2000 + (int)(Math.random() * 2000);
+            int delay = 2000 + (int) (Math.random() * 2000);
             Thread.sleep(delay);
 
             // Execute turn in model
@@ -203,7 +209,7 @@ public class CincuentazoGameController {
                     updateUI();
                 } else {
                     // Player was eliminated
-                    showWarning("Player Eliminated!", cpu.getName() + " has been eliminated!");
+                    alertManager.showWarning("Player Eliminated!", cpu.getName() + " has been eliminated!");
                     updateUI();
                 }
             });
@@ -234,13 +240,13 @@ public class CincuentazoGameController {
      */
     private void handleCardClick(Card card, ImageView cardView) {
         if (!humanTurnActive.get()) {
-            showWarning("Not Your Turn", "Please wait for your turn.");
+            alertManager.showWarning("Not Your Turn", "Please wait for your turn.");
             return;
         }
 
         // Check if already played a card this turn
         if (cardPlayedThisTurn) {
-            showWarning("Already Played", "You already played a card this turn!\nClick 'Take Card' to draw a card.");
+            alertManager.showWarning("Already Played", "You already played a card this turn!\nClick 'Take Card' to draw a card.");
             return;
         }
 
@@ -249,7 +255,7 @@ public class CincuentazoGameController {
             if (!game.hasValidCards(humanPlayer)) {
                 // No valid cards - eliminate player
                 game.eliminatePlayer(humanPlayer);
-                showWarning("Eliminated!", "You have no valid cards to play.");
+                alertManager.showWarning("Eliminated!", "You have no valid cards to play.");
                 humanTurnActive.set(false);
                 cardPlayedThisTurn = false;
                 game.advanceTurn();
@@ -258,7 +264,7 @@ public class CincuentazoGameController {
                 // Player has other valid cards
                 int effect = card.calculateEffect(game.getTableSum());
                 int newSum = game.getTableSum() + effect;
-                showWarning("Invalid Move", "This card would exceed 50 (new sum: " + newSum + ").\nChoose another card.");
+                alertManager.showWarning("Invalid Move", "This card would exceed 50 (new sum: " + newSum + ").\nChoose another card.");
             }
             return;
         }
@@ -269,7 +275,7 @@ public class CincuentazoGameController {
             cardPlayedThisTurn = true;
             updateUI();
         } catch (InvalidMoveException e) {
-            showWarning("Invalid Move", e.getMessage());
+            alertManager.showWarning("Invalid Move", e.getMessage());
         }
     }
 
@@ -279,7 +285,7 @@ public class CincuentazoGameController {
     @FXML
     private void handleTakeCard(ActionEvent event) {
         if (!humanTurnActive.get()) {
-            showWarning("Not Your Turn", "Please wait for your turn.");
+            alertManager.showWarning("Not Your Turn", "Please wait for your turn.");
             return;
         }
 
@@ -367,7 +373,7 @@ public class CincuentazoGameController {
             System.out.println(imagePath);
             var is = getClass().getResourceAsStream(imagePath);
             try {
-                if(is != null) {
+                if (is != null) {
                     Image cardImage = new Image(is);
                     tableCardImage.setImage(cardImage);
                 }
@@ -483,7 +489,7 @@ public class CincuentazoGameController {
      */
     private ImageView createCardView(Card card, boolean faceUp) {
         ImageView cardView = new ImageView();
-        if(!faceUp) {
+        if (!faceUp) {
             cardView.setFitHeight(53.0);
             cardView.setFitWidth(38.0);
         } else {
@@ -556,6 +562,7 @@ public class CincuentazoGameController {
                     CincuentazoWinnerStage.getInstance();
                     System.out.println("Winner: " + winner.getName() + " (Human)");
                 } else {
+                    CincuentazoWelcomeStage.getInstance();
                     System.out.println("Winner: " + winner.getName() + " (Machine)");
                 }
 
@@ -573,15 +580,13 @@ public class CincuentazoGameController {
     @FXML
     private void handleBack(ActionEvent event) {
         shutdown();
-
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/miniproyecto3/fxml/cincuentazo-menu-view.fxml"));
-            Parent menuView = loader.load();
+            // Close game stage (calls shutdown automatically)
+            CincuentazoGameStage.deleteInstance();
 
-            Stage stage = (Stage) bottomVBox.getScene().getWindow();
-            Scene scene = new Scene(menuView);
-            stage.setScene(scene);
-            stage.show();
+            // Open welcome/menu stage
+            CincuentazoWelcomeStage.getInstance();
+
         } catch (IOException e) {
             System.err.println("Error loading menu: " + e.getMessage());
             e.printStackTrace();
@@ -594,12 +599,12 @@ public class CincuentazoGameController {
      *
      * @param event the action event
      */
+
     @FXML
     private void handleHelp(ActionEvent event) {
         try {
-            CincuentazoHelpStage.getInstance();
+            CincuentazoHelpStage.getInstance("game");
         } catch (IOException e) {
-            System.err.println("Error opening help window: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -619,48 +624,48 @@ public class CincuentazoGameController {
 
     /**
      * Shows an information dialog.
-     */
-    private void showInfo(String title, String message) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.initStyle(StageStyle.UNDECORATED);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            DialogPane dialogPane = alert.getDialogPane();
-            URL css = getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
-            if (css != null) {
-                dialogPane.getStylesheets().add(css.toExternalForm());
-            } else {
-                System.err.println("⚠️ No se encontró el archivo CSS en /css/Styles.css");
-            }
-            dialogPane.getStyleClass().add("my-info-alert");
-            alert.showAndWait();
-        });
-    }
+
+     private void showInfo(String title, String message) {
+     Platform.runLater(() -> {
+     Alert alert = new Alert(Alert.AlertType.INFORMATION);
+     alert.initStyle(StageStyle.UNDECORATED);
+     alert.setTitle(title);
+     alert.setHeaderText(null);
+     alert.setContentText(message);
+     DialogPane dialogPane = alert.getDialogPane();
+     URL css = getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
+     if (css != null) {
+     dialogPane.getStylesheets().add(css.toExternalForm());
+     } else {
+     System.err.println("⚠️ No se encontró el archivo CSS en /css/Styles.css");
+     }
+     dialogPane.getStyleClass().add("my-info-alert");
+     alert.showAndWait();
+     });
+     }*/
 
     /**
      * Shows a warning dialog.
-     */
-    private void showWarning(String title, String message) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.initStyle(StageStyle.UNDECORATED);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            DialogPane dialogPane = alert.getDialogPane();
-            URL css = getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
-            if (css != null) {
-                dialogPane.getStylesheets().add(css.toExternalForm());
-            } else {
-                System.err.println("⚠️ No se encontró el archivo CSS en /css/Styles.css");
-            }
 
-            dialogPane.getStyleClass().add("my-alert");
-            alert.showAndWait();
-        });
-    }
+     private void showWarning(String title, String message) {
+     Platform.runLater(() -> {
+     Alert alert = new Alert(Alert.AlertType.WARNING);
+     alert.initStyle(StageStyle.UNDECORATED);
+     alert.setTitle(title);
+     alert.setHeaderText(null);
+     alert.setContentText(message);
+     DialogPane dialogPane = alert.getDialogPane();
+     URL css = getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
+     if (css != null) {
+     dialogPane.getStylesheets().add(css.toExternalForm());
+     } else {
+     System.err.println("⚠️ No se encontró el archivo CSS en /css/Styles.css");
+     }
+
+     dialogPane.getStyleClass().add("my-alert");
+     alert.showAndWait();
+     });
+     }*/
 
     /**
      * Cleanup when controller is destroyed.
@@ -674,4 +679,85 @@ public class CincuentazoGameController {
             game.stop();
         }
     }
+
+
+    // Inner class managing alerts
+
+    private class AlertManager {
+        //private static final String CSS_PATH ="/com/example/miniproyecto3/css/Styles.css";
+
+        /**
+         * Shows the game start information alert.
+         */
+        public void showGameStart(int numPlayers) {
+            Alert alert = createStyledAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Game Start",
+                    "¡Cincuentazo!",
+                    "Playing against " + numPlayers + " CPU opponent(s).\nYour turn is first. Click a card to play!",
+                    "my-info-alert"
+            );
+            alert.show();
+        }
+
+        /*
+        Show error alert
+         */
+        public void showError(String title, String message) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+
+        }
+
+        /*
+        Show information alert
+         */
+        public void showInfo(String title, String message) {
+            Alert alert = createStyledAlert(
+                    Alert.AlertType.INFORMATION, title, null, message, "my-info-alert"
+            );
+            alert.showAndWait();
+        }
+
+
+        /*
+        Show warning alert
+         */
+        public void showWarning(String title, String message) {
+            Alert alert = createStyledAlert(
+                    Alert.AlertType.WARNING, title, null, message, "my-alert"
+            );
+            alert.showAndWait();
+        }
+
+
+        /*
+        Create styled alert with custom CSS
+         */
+        private Alert createStyledAlert(Alert.AlertType type, String title, String header, String content, String styleClass) {
+            Alert alert = new Alert(type);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.setTitle(title);
+            alert.setHeaderText(header);
+            alert.setContentText(content);
+            alert.setGraphic(null);
+
+            DialogPane dialogPane = alert.getDialogPane();
+            URL css = CincuentazoGameController.this.getClass().getResource("/com/example/miniproyecto3/css/Styles.css");
+            if (css != null) {
+                dialogPane.getStylesheets().add(css.toExternalForm());
+            } else {
+                System.err.println("⚠️ CSS not found at: " + "/com/example/miniproyecto3/css/Styles.css");
+            }
+            dialogPane.getStyleClass().add(styleClass);
+
+            return alert;
+        }
+
+    }
+
 }
+

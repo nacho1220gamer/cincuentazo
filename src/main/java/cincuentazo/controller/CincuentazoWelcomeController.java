@@ -121,7 +121,7 @@ public class CincuentazoWelcomeController {
     @FXML
     private void handleHelp(ActionEvent event) {
         try {
-            CincuentazoHelpStage.getInstance();
+            CincuentazoHelpStage.getInstance("welcome");
         } catch (IOException e) {
             System.err.println("Error opening help window: " + e.getMessage());
             e.printStackTrace();

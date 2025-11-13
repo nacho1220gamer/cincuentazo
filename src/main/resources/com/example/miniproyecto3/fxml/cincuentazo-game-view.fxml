@@ -18,11 +18,11 @@
             <left>
                 <VBox fx:id="leftVBox" alignment="TOP_CENTER" prefHeight="131.0" prefWidth="153.0" BorderPane.alignment="CENTER">
                     <children>
-                  <ImageView fitHeight="50.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/player3.png" />
-                     </image>
-                  </ImageView>
+                        <ImageView fitHeight="50.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/player3.png" />
+                            </image>
+                        </ImageView>
                         <HBox prefHeight="75.0" prefWidth="149.0">
                             <children>
                                 <ImageView fitHeight="53.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
@@ -91,28 +91,27 @@
             <bottom>
                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <children>
-                        <!-- 🔹 Aquí se añadió fx:id="testCard" solo para la prueba -->
                         <Pane prefHeight="100.0" prefWidth="114.0" />
                         <VBox fx:id="bottomVBox" alignment="CENTER" prefHeight="100.0" prefWidth="260.0">
                             <children>
                                 <HBox alignment="CENTER" prefHeight="87.0" prefWidth="270.0">
                                     <children>
-                                        <ImageView fx:id="testCard" fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
+                                        <ImageView fx:id="testCard" fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
                                             <image>
                                                 <Image url="@../images/cards/7Corazones.png" />
                                             </image>
                                         </ImageView>
-                                        <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
+                                        <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
                                             <image>
                                                 <Image url="@../images/cards/3Treboles.png" />
                                             </image>
                                         </ImageView>
-                                        <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
+                                        <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
                                             <image>
                                                 <Image url="@../images/cards/2Picas.png" />
                                             </image>
                                         </ImageView>
-                                        <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
+                                        <ImageView fitHeight="82.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
                                             <image>
                                                 <Image url="@../images/cards/QDiamantes.png" />
                                             </image>
@@ -123,7 +122,7 @@
                         </VBox>
                         <Pane prefHeight="100.0" prefWidth="115.0">
                             <children>
-                                <Button layoutX="13.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleTakeCard" prefHeight="68.0" prefWidth="66.0" styleClass="my-buttonTakeCard" />
+                                <Button layoutX="13.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleTakeCard" prefHeight="68.0" prefWidth="66.0" styleClass="my-buttonTakeCard" style="-fx-cursor: hand;" />
                             </children>
                         </Pane>
                     </children>
@@ -197,7 +196,7 @@
                 </VBox>
             </top>
         </BorderPane>
-        <Button layoutX="3.0" layoutY="5.0" mnemonicParsing="false" onAction="#handleBack" prefHeight="57.0" prefWidth="54.0" styleClass="button-back" />
-        <Button layoutX="538.0" layoutY="4.0" mnemonicParsing="false" onAction="#handleHelp" prefHeight="57.0" prefWidth="54.0" styleClass="button-help" />
+        <Button layoutX="3.0" layoutY="5.0" mnemonicParsing="false" onAction="#handleBack" prefHeight="57.0" prefWidth="54.0" styleClass="button-back" style="-fx-cursor: hand;" />
+        <Button layoutX="538.0" layoutY="4.0" mnemonicParsing="false" onAction="#handleHelp" prefHeight="57.0" prefWidth="54.0" styleClass="button-help" style="-fx-cursor: hand;" />
     </children>
 </Pane>

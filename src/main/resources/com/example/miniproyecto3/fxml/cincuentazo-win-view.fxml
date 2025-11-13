@@ -9,34 +9,34 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="backgroundWin" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cincuentazo.controller.CincuentazoWinnerController">
-   <children>
-      <Pane prefHeight="309.0" prefWidth="600.0" />
-      <HBox alignment="CENTER" prefHeight="91.0" prefWidth="600.0">
-         <children>
-            <Button mnemonicParsing="false" onAction="#handleHome" prefHeight="81.0" prefWidth="85.0" styleClass="my-button8">
-               <HBox.margin>
-                  <Insets right="10.0" />
-               </HBox.margin>
-               <effect>
-                  <Glow level="0.49" />
-               </effect>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#handleDoor" prefHeight="83.0" prefWidth="86.0" styleClass="my-button9">
-               <padding>
-                  <Insets left="10.0" />
-               </padding>
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-               <effect>
-                  <Glow level="0.5" />
-               </effect>
-            </Button>
-         </children>
-      </HBox>
-   </children>
-   <stylesheets>
-      <URL value="@../css/Styles.css" />
-      <URL value="@../css/Styles.css" />
-   </stylesheets>
+    <children>
+        <Pane prefHeight="309.0" prefWidth="600.0" />
+        <HBox alignment="CENTER" prefHeight="91.0" prefWidth="600.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#handleHome" prefHeight="81.0" prefWidth="85.0" styleClass="my-button8" style="-fx-cursor: hand;">
+                    <HBox.margin>
+                        <Insets right="10.0" />
+                    </HBox.margin>
+                    <effect>
+                        <Glow level="0.49" />
+                    </effect>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#handleDoor" prefHeight="83.0" prefWidth="86.0" styleClass="my-button9" style="-fx-cursor: hand;">
+                    <padding>
+                        <Insets left="10.0" />
+                    </padding>
+                    <HBox.margin>
+                        <Insets left="10.0" />
+                    </HBox.margin>
+                    <effect>
+                        <Glow level="0.5" />
+                    </effect>
+                </Button>
+            </children>
+        </HBox>
+    </children>
+    <stylesheets>
+        <URL value="@../css/Styles.css" />
+        <URL value="@../css/Styles.css" />
+    </stylesheets>
 </VBox>
