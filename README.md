@@ -159,6 +159,11 @@ Each package can be extended with test classes to ensure correct behavior of the
 
 ---
 
+## 📚 Documentation
+You can find the full project documentation in the `/javaDoc` folder.
+
+---
+
 ## 🪪 License
 
 This project is released under the **MIT License** — you are free to use, modify, and distribute it for educational or personal purposes.
