@@ -8,12 +8,10 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="backgroundWin" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Pane prefHeight="309.0" prefWidth="600.0" />
       <HBox alignment="CENTER" prefHeight="91.0" prefWidth="600.0">
          <children>
-            <Button mnemonicParsing="false" prefHeight="81.0" prefWidth="85.0" styleClass="my-button8">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin>
@@ -21,7 +19,6 @@
                   <Glow level="0.49" />
                </effect>
             </Button>
-            <Button mnemonicParsing="false" prefHeight="83.0" prefWidth="86.0" styleClass="my-button9">
                <padding>
                   <Insets left="10.0" />
                </padding>

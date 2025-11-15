@@ -13,152 +13,151 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="backgroundHelp" stylesheets="@../css/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <ImageView fitHeight="51.0" fitWidth="258.0" layoutX="171.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/helpTittle.png" />
-         </image>
-      </ImageView>
-      <GridPane layoutX="50.0" layoutY="131.0" prefHeight="229.0" prefWidth="510.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="264.0" minWidth="10.0" prefWidth="254.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="253.0" minWidth="10.0" prefWidth="241.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints maxHeight="119.0" minHeight="10.0" prefHeight="108.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="130.0" minHeight="10.0" prefHeight="126.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <HBox prefHeight="124.0" prefWidth="238.0">
-               <children>
-                  <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/diamond.png" />
-                     </image>
-                  </ImageView>
-                  <VBox prefHeight="108.0" prefWidth="237.0">
-                     <children>
-                        <Label prefHeight="34.0" prefWidth="105.0" text="Preparación" textFill="#fad425">
-                           <font>
-                              <Font name="System Bold" size="18.0" />
-                           </font>
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="backgroundHelp" stylesheets="@../css/Styles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cincuentazo.controller.CincuentazoHelpController">
+    <children>
+        <ImageView fitHeight="51.0" fitWidth="258.0" layoutX="171.0" layoutY="34.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../images/helpTittle.png" />
+            </image>
+        </ImageView>
+        <GridPane layoutX="50.0" layoutY="131.0" prefHeight="229.0" prefWidth="510.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="264.0" minWidth="10.0" prefWidth="254.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="253.0" minWidth="10.0" prefWidth="241.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="119.0" minHeight="10.0" prefHeight="108.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="130.0" minHeight="10.0" prefHeight="126.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <HBox prefHeight="124.0" prefWidth="238.0">
+                    <children>
+                        <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/diamond.png" />
+                            </image>
+                        </ImageView>
+                        <VBox prefHeight="108.0" prefWidth="237.0">
+                            <children>
+                                <Label prefHeight="34.0" prefWidth="105.0" text="Preparación" textFill="#fad425">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="22.0" prefWidth="206.0" text="Cada jugador recibe 4 cartas." textFill="#fad425" wrapText="true">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="37.0" prefWidth="224.0" text="Una carta se coloca en la mesa para iniciar la suma." textFill="#fad425" wrapText="true">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="36.0" prefWidth="227.0" text="Las cartas del jugador son boca arriba, las de la CPU boca abajo." textFill="#fad425" wrapText="true">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+                <HBox prefHeight="108.0" prefWidth="191.0" GridPane.columnIndex="1">
+                    <children>
+                        <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/diamond.png" />
+                            </image>
+                        </ImageView>
+                        <VBox prefHeight="108.0" prefWidth="204.0">
+                            <children>
+                                <Label prefHeight="34.0" prefWidth="170.0" text="Valores de las cartas" textFill="#fad425">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="28.0" prefWidth="185.0" text="2–8, 10: suman su valor." textFill="#fad425" wrapText="true" />
+                                <Label prefHeight="28.0" prefWidth="185.0" text="9: no suma ni resta." textFill="#fad425" wrapText="true" />
+                                <Label prefHeight="28.0" prefWidth="185.0" text="J, Q, K: restan 10." textFill="#fad425" wrapText="true" />
+                                <Label prefHeight="28.0" prefWidth="185.0" text="A: vale 1 o 10, según convenga." textFill="#fad425" wrapText="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+                <HBox prefHeight="65.0" prefWidth="118.0" GridPane.rowIndex="1">
+                    <children>
+                        <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/diamond.png" />
+                            </image>
+                        </ImageView>
+                        <VBox prefHeight="120.0" prefWidth="234.0">
+                            <children>
+                                <Label prefHeight="34.0" prefWidth="105.0" text="Turnos" textFill="#fad425">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="23.0" prefWidth="206.0" text="Juega una carta sin pasar de 50." textFill="#fad425" wrapText="true" />
+                                <Label prefHeight="23.0" prefWidth="206.0" text="Colócala sobre la carta anterior." textFill="#fad425" wrapText="true" />
+                                <Label prefHeight="43.0" prefWidth="222.0" text="Toma una carta del mazo para mantener 4 en mano." textFill="#fad425" wrapText="true" />
+                                <Label prefHeight="23.0" prefWidth="206.0" text="Si no puedes jugar, quedas eliminado." textFill="#fad425" wrapText="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets top="5.0" />
+                    </padding>
+                </HBox>
+                <HBox alignment="TOP_CENTER" prefHeight="120.0" prefWidth="203.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <children>
+                        <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/diamond.png" />
+                            </image>
+                        </ImageView>
+                        <VBox prefHeight="114.0" prefWidth="224.0">
+                            <children>
+                                <Label prefHeight="34.0" prefWidth="105.0" text="Fin del Juego" textFill="#fad425">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                                <Label prefHeight="28.0" prefWidth="206.0" text="El último jugador en mesa gana." textFill="#fad425" wrapText="true" />
+                                <Label prefHeight="37.0" prefWidth="226.0" text="Si se acaba el mazo, se barajan las cartas jugadas (menos la última)." textFill="#fad425" wrapText="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets top="10.0" />
+                    </padding>
+                </HBox>
+            </children>
+        </GridPane>
+        <HBox alignment="TOP_CENTER" layoutX="39.0" layoutY="74.0" prefHeight="57.0" prefWidth="485.0">
+            <children>
+                <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/Goals.png" />
+                    </image>
+                </ImageView>
+                <VBox prefHeight="76.0" prefWidth="426.0">
+                    <children>
+                        <Label prefHeight="29.0" prefWidth="108.0" text="Objetivo" textFill="#fad425">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
                         </Label>
-                        <Label prefHeight="22.0" prefWidth="206.0" text="Cada jugador recibe 4 cartas." textFill="#fad425" wrapText="true">
-                           <font>
-                              <Font size="12.0" />
-                           </font>
+                        <Label prefHeight="26.0" prefWidth="425.0" text="Ser el último jugador activo sin que la suma de la mesa supere 50." textFill="#fad425" wrapText="true">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
                         </Label>
-                        <Label prefHeight="37.0" prefWidth="224.0" text="Una carta se coloca en la mesa para iniciar la suma." textFill="#fad425" wrapText="true">
-                           <font>
-                              <Font size="12.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="36.0" prefWidth="227.0" text="Las cartas del jugador son boca arriba, las de la CPU boca abajo." textFill="#fad425" wrapText="true">
-                           <font>
-                              <Font size="12.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
-            <HBox prefHeight="108.0" prefWidth="191.0" GridPane.columnIndex="1">
-               <children>
-                  <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/diamond.png" />
-                     </image>
-                  </ImageView>
-                  <VBox prefHeight="108.0" prefWidth="204.0">
-                     <children>
-                        <Label prefHeight="34.0" prefWidth="170.0" text="Valores de las cartas" textFill="#fad425">
-                           <font>
-                              <Font name="System Bold" size="18.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="28.0" prefWidth="185.0" text="2–8, 10: suman su valor." textFill="#fad425" wrapText="true" />
-                        <Label prefHeight="28.0" prefWidth="185.0" text="9: no suma ni resta." textFill="#fad425" wrapText="true" />
-                        <Label prefHeight="28.0" prefWidth="185.0" text="J, Q, K: restan 10." textFill="#fad425" wrapText="true" />
-                        <Label prefHeight="28.0" prefWidth="185.0" text="A: vale 1 o 10, según convenga." textFill="#fad425" wrapText="true" />
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
-            <HBox prefHeight="65.0" prefWidth="118.0" GridPane.rowIndex="1">
-               <children>
-                  <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/diamond.png" />
-                     </image>
-                  </ImageView>
-                  <VBox prefHeight="120.0" prefWidth="234.0">
-                     <children>
-                        <Label prefHeight="34.0" prefWidth="105.0" text="Turnos" textFill="#fad425">
-                           <font>
-                              <Font name="System Bold" size="18.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="23.0" prefWidth="206.0" text="Juega una carta sin pasar de 50." textFill="#fad425" wrapText="true" />
-                        <Label prefHeight="23.0" prefWidth="206.0" text="Colócala sobre la carta anterior." textFill="#fad425" wrapText="true" />
-                        <Label prefHeight="43.0" prefWidth="222.0" text="Toma una carta del mazo para mantener 4 en mano." textFill="#fad425" wrapText="true" />
-                        <Label prefHeight="23.0" prefWidth="206.0" text="Si no puedes jugar, quedas eliminado." textFill="#fad425" wrapText="true" />
-                     </children>
-                  </VBox>
-               </children>
-               <padding>
-                  <Insets top="5.0" />
-               </padding>
-            </HBox>
-            <HBox alignment="TOP_CENTER" prefHeight="120.0" prefWidth="203.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <children>
-                  <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/diamond.png" />
-                     </image>
-                  </ImageView>
-                  <VBox prefHeight="114.0" prefWidth="224.0">
-                     <children>
-                        <Label prefHeight="34.0" prefWidth="105.0" text="Fin del Juego" textFill="#fad425">
-                           <font>
-                              <Font name="System Bold" size="18.0" />
-                           </font>
-                        </Label>
-                        <Label prefHeight="28.0" prefWidth="206.0" text="El último jugador en mesa gana." textFill="#fad425" wrapText="true" />
-                        <Label prefHeight="37.0" prefWidth="226.0" text="Si se acaba el mazo, se barajan las cartas jugadas (menos la última)." textFill="#fad425" wrapText="true" />
-                     </children>
-                  </VBox>
-               </children>
-               <padding>
-                  <Insets top="10.0" />
-               </padding>
-            </HBox>
-         </children>
-      </GridPane>
-      <HBox alignment="TOP_CENTER" layoutX="39.0" layoutY="74.0" prefHeight="57.0" prefWidth="485.0">
-         <children>
-            <ImageView fitHeight="33.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../images/Goals.png" />
-               </image>
-            </ImageView>
-            <VBox prefHeight="76.0" prefWidth="426.0">
-               <children>
-                  <Label prefHeight="29.0" prefWidth="108.0" text="Objetivo" textFill="#fad425">
-                     <font>
-                        <Font name="System Bold" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label prefHeight="26.0" prefWidth="425.0" text="Ser el último jugador activo sin que la suma de la mesa supere 50." textFill="#fad425" wrapText="true">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-      <Button layoutX="3.0" layoutY="3.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="54.0" styleClass="button-back" />
-   </children>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+        <Button layoutX="3.0" layoutY="3.0" mnemonicParsing="false" onAction="#handleBack" prefHeight="57.0" prefWidth="54.0" styleClass="button-back" style="-fx-cursor: hand;" />
+    </children>
 </Pane>

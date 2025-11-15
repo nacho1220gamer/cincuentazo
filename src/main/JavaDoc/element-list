@@ -1,0 +1,8 @@
+module:cincuentazo
+cincuentazo.controller
+cincuentazo.model.card
+cincuentazo.model.deck
+cincuentazo.model.exceptions
+cincuentazo.model.game
+cincuentazo.model.player
+cincuentazo.view
